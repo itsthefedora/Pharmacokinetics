@@ -19,6 +19,7 @@ model.nCompartments = length( model.compartmentNames );
 model.fromLinkers = cell( model.nCompartments, 1 );
 model.toLinkers = cell( model.nCompartments, 1 );
 model.targetInputs = cell( model.nCompartments, 1 );
+model.compartmentDisplayNames = cell( model.nCompartments, 1 );
 
 %% Compute initial state
 
@@ -29,6 +30,9 @@ for i = 1:model.nCompartments
 	model.fromLinkers{ i } = { };
 	model.toLinkers{ i } = { };
 	model.targetFlows{ i } = { };
+
+	model.compartmentDisplayNames{ i } = ...
+		model.compartments.(model.compartmentNames{i}).displayName;
 
 	model.initialState( i ) = ...
 		model.compartments.(model.compartmentNames{i}).initialAmount;
