@@ -27,6 +27,10 @@ effectiveDose 	= dose * bioavailability;	% mg
 
 model.timeSpan = [ 0 24 ];
 
+model.analyticType = 'ivb';
+model.analyticParameters.A0 = effectiveDose;
+model.analyticParameters.kE = kE;
+
 %% Compartments
 
 x = pk_default_compartment( );

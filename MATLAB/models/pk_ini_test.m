@@ -8,7 +8,7 @@
 
 %% Simulation
 
-model.timeSpan = [ 0 20 ];
+model.timeSpan = [ 0 24 ];
 
 %% Compartments
 

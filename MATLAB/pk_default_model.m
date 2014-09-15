@@ -14,6 +14,9 @@ ret = struct;
 
 ret.timeSpan = [0 10];
 
+ret.analyticType = '';
+ret.analyticParameters = struct;
+
 ret.compartments = struct;
 ret.connections = { };
 ret.inputs = { };
