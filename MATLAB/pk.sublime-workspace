@@ -1,0 +1,443 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"compartment",
+				"compartmentNames"
+			],
+			[
+				"pk_def",
+				"pk_default_connection"
+			],
+			[
+				"output",
+				"outputInitFullPath"
+			],
+			[
+				"hWait",
+				"hWaitOverall"
+			],
+			[
+				"mtspecg",
+				"mtspecgramc"
+			],
+			[
+				"kPhase",
+				"kPhaseChunkData"
+			],
+			[
+				"subnets_impo",
+				"subnets_import_defaults"
+			],
+			[
+				"kAnin",
+				"kAninInputDataType"
+			],
+			[
+				"kPhaseLoad",
+				"kPhaseLoadData"
+			],
+			[
+				"inputF",
+				"inputFullPath"
+			],
+			[
+				"trigg",
+				"triggerInverted"
+			],
+			[
+				"Samp",
+				"SamplingFreq"
+			],
+			[
+				"e",
+				"elseif	elseif"
+			],
+			[
+				"g",
+				"griddata	griddata"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "pk_main.m",
+			"settings":
+			{
+				"buffer_size": 858,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pk_ini_test.m",
+			"settings":
+			{
+				"buffer_size": 677,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pk_odefun.m",
+			"settings":
+			{
+				"buffer_size": 764,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "%=========================================================================%\n% Pharmacokinetic Model\n% => Default compartment parameters.\n% \n% [Authors]\n% Fall 2014\n%=========================================================================%\n\nfunction [model] = pk_compute_model(inputModel)\n%PK_COMPUTE_MODEL Summary of this function goes here\n%   Detailed explanation goes here\n\nmodel = inputModel;\n\n%model.compartments = orderfields( model.compartments );\nmodel.compartmentNames = fieldnames( model.compartments );\nmodel.nCompartments = length( model.compartmentNames );\n\nmodel.fromLinkers = cell( model.nCompartments, 1 );\nmodel.toLinkers = cell( model.nCompartments, 1 );\n\n%model.initialState = \n\nfor i = 1:model.nCompartments\n\n	model.fromLinkers{ i } = { };\n	model.toLinkers{ i } = { };\n\n	model\n\nend\n\nfor i = 1:length( model.connections )\n\n	cur = model.connections{i};\n	fromIndex = find( ismember( model.compartmentNames, cur.from ) );\n	toIndex = find( ismember( model.compartmentNames, cur.to ) );\n	\n	if ~isempty( fromIndex )\n		model.fromLinkers{ fromIndex }{ end + 1 } = cur.linker;\n	end\n	if ~isempty( toIndex )\n		model.toLinkers{ toIndex }{ end + 1 } = cur.linker;\n	end\n\nend\n\nend\n\n\n\n\n\n\n\n\n\n\n\n",
+			"file": "pk_compute_model.m",
+			"file_size": 1163,
+			"file_write_time": 130552162010000000,
+			"settings":
+			{
+				"buffer_size": 1197,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/User/matlab2014a.sublime-build",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+			[
+				"side b",
+				"View: Toggle Side Bar"
+			],
+			[
+				"",
+				"About"
+			],
+			[
+				"sideb",
+				"View: Toggle Side Bar"
+			],
+			[
+				"markd",
+				"Set Syntax: Markdown"
+			],
+			[
+				"ssmat",
+				"Set Syntax: MATLAB"
+			]
+		],
+		"width": 422.0
+	},
+	"console":
+	{
+		"height": 153.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_linear_linker.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_default_connection.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_default_compartment.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_odefun",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_main",
+		"/Users/Jim/Documents/TeXnicle/JHU-HW/FA14/hw-boiler.tex",
+		"/Users/Jim/Documents/Git/subnets/pub/subnets_main",
+		"/Users/Jim/Documents/Git/subnets/pub/subnets_pub.sublime-project",
+		"/Users/Jim/Documents/Git/subnets/pub/subnets_import.m",
+		"/Users/Jim/Documents/Git/subnets/pub/subnets_chunkify",
+		"/Users/Jim/Documents/Git/subnets/pub/subnets_findtrials",
+		"/Users/Jim/Documents/Git/subnets/pub/subnets_import_defaults.m",
+		"/Users/Jim/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/Jim/Documents/Git/subnets/pub/subnets_loaddata.m",
+		"/Users/Jim/Documents/Git/subnets/pub/subnets_loadfilter.m",
+		"/Users/Jim/Documents/Git/subnets/pub/subnets_import_defaultParams.m",
+		"/Users/Jim/Documents/Git/subnets/subnets_importdata.m",
+		"/Users/Jim/Documents/Git/Griffinalysis/matlab/openNK.m",
+		"/Users/Jim/Desktop/OFCM-Data/Raw/PY12N010/NP/Data/exp.hdr",
+		"/Users/Jim/Documents/Git/Griffinalysis/matlab/nihon_kohden/RED_encode.c",
+		"/private/etc/paths",
+		"/Users/Jim/Desktop/main-pwm.cpp",
+		"/Users/Jim/Desktop/main.cpp",
+		"/Users/Jim/Desktop/main-input.cpp",
+		"/Users/Jim/Desktop/Hidden Clutter/main.cpp",
+		"/Users/Jim/Documents/Git/build-tutorials/scope/testing/main2.cpp",
+		"/Users/Jim/Documents/Git/build-tutorials/scope/main.cpp",
+		"/Users/Jim/Documents/Git/build-tutorials/scope/testing/DHT22.cpp",
+		"/Users/Jim/Documents/Git/build-tutorials/scope/testing/DHT22.h",
+		"/Users/Jim/Documents/Git/subnets/filters/1000_BlackRock_127-176.txt",
+		"/Users/Jim/Library/Application Support/Sublime Text 3/Packages/User/Distraction Free.sublime-settings",
+		"/Users/Jim/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/Users/Jim/Library/Application Support/Sublime Text 3/Packages/User/Objective-C++.sublime-settings",
+		"/Users/Jim/Library/Application Support/Sublime Text 3/Packages/User/testBuild.m",
+		"/Users/Jim/Documents/Git/ofcm/ofcm_main.m"
+	],
+	"find":
+	{
+		"height": 32.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"allData",
+			"doResponse",
+			"trialPSDuration",
+			"trialBufferDuration",
+			"dataFs",
+			"defaultParams",
+			"kDefaultT",
+			"...",
+			"bitDe",
+			"int16",
+			"channels",
+			"NK.Data",
+			"int",
+			"int3",
+			"int",
+			"Filestoread",
+			"eeg.hdr",
+			"FilePath",
+			"kdt",
+			"i"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "pk_main.m",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 858,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								813,
+								813
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Matlab/Matlab.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 288.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "pk_ini_test.m",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 677,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								638,
+								638
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Matlab/Matlab.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "pk_odefun.m",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 764,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								718,
+								718
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Matlab/Matlab.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "pk_compute_model.m",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1197,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								676,
+								676
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"syntax": "Packages/Matlab/Matlab.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 213.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 32.0
+	},
+	"input":
+	{
+		"height": 48.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 124.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "pk.sublime-project",
+	"replace":
+	{
+		"height": 60.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"",
+				"anin_import_test.m"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": false,
+	"side_bar_width": 219.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
