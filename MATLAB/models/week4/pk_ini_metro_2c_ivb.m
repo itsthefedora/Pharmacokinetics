@@ -8,6 +8,8 @@
 
 %% Input parameters
 
+bindRateFactor	= 1e4;
+
 patientMass 	= 70;		% kg
 waterFraction	= 0.65;		% [0 1]
 
@@ -18,30 +20,21 @@ VdPerMass 		= 0.81;		% L / kg
 kE				= 0.0866;	% / hr
 kA				= 5.4;		% / hr
 
+Vc				= 36;	% L
+Vp 				= 14;	% L
+kCP				= 0.9;	% / hr
+kPC 			= 2.1;	% / hr
+bindingFraction = 0.20;	% [0 1]
+
 % Derived parameters
 waterMass 		= patientMass * waterFraction;
 Vd 				= VdPerMass * waterMass;	% L
 effectiveDose 	= dose * bioavailability;	% mg
 
-%% Simulation
+kB 				= kE * bindRateFactor * bindingFraction;
+kU 				= kE * bindRateFactor * ( 1 - bindingFraction );
 
-model.timeSpan = [ 0 24 ];
+%% Generate standard 2C model
 
-%% Compartments
+run( 'pk_subini_standard_2c_ivb.m' );
 
-x = pk_default_compartment( );
-x.volume = Vd;
-x.initialAmount = effectiveDose;
-x.displayName = 'Body';
-model.compartments.body = x;
-
-%% Connections
-
-x = pk_default_connection( );
-x.from = 'body';
-x.to = '';
-x.linker = pk_linear_linker( kE );
-model.connections{ end + 1 } = x;
-
-%% Inputs
-% [none]

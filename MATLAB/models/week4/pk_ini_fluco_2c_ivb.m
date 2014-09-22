@@ -13,26 +13,27 @@ bindRateFactor	= 1e4;		% / hr
 patientMass 	= 70;		% kg
 waterFraction	= 0.65;		% [0 1]
 
-dose 			= 600;		% mg
+dose 			= 400;		% mg
 
-bioavailability = 1.0;		% [0 1]
-%VdPerMass 		= 45 / (78.6 * waterFraction); % L / kg
-halfLifeE		= 4.9;		% hr
-kA 				= 5.73;		% / hr
+bioavailability = 0.9;		% [0 1]
+VdPerMass 		= 1.23;		% L / kg
+halfLifeE		= 30.0;		% hr
+kA				= 2.0;		% / hr
 
-Vc				= 26.8;		% L
-Vp 				= 17.3;		% L
-kCP				= 8.04;		% / hr
-kPC 			= 7.99;		% / hr
-bindingFraction = 0.31;		% [0 1]
-kB 				= kE * bindRateFactor * bindingFraction;
-kU 				= kE * bindRateFactor * ( 1 - bindingFraction );
+Vc				= 31.7;		% L
+Vp 				= 21.9;		% L
+kCP				= 14.47;	% / hr
+kPC 			= 12.44;	% / hr
+bindingFraction = 0.11;		% [0 1]
 
 % Derived parameters
-%waterMass 		= patientMass * waterFraction;
-%Vd 				= VdPerMass * waterMass;	% L
+waterMass 		= patientMass * waterFraction;
+Vd 				= VdPerMass * waterMass;	% L
 effectiveDose 	= dose * bioavailability;	% mg
-kE 				= log(2) / halfLifeE;					% / hr
+kE 				= log(2) / halfLifeE;		% / hr
+
+kB 				= kE * bindRateFactor * bindingFraction;
+kU 				= kE * bindRateFactor * ( 1 - bindingFraction );
 
 %% Simulation
 
