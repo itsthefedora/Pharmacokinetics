@@ -29,6 +29,7 @@ for i = 1:model.nCompartments
 
 	model.fromLinkers{ i } = { };
 	model.toLinkers{ i } = { };
+	model.toLinkerSources{ i } = { };
 	model.targetFlows{ i } = { };
 
 	model.compartmentDisplayNames{ i } = ...
@@ -52,6 +53,7 @@ for i = 1:length( model.connections )
 	end
 	if ~isempty( toIndex )
 		model.toLinkers{ toIndex }{ end + 1 } = cur.linker;
+		model.toLinkerSources{ toIndex }{ end + 1 } = fromIndex;
 	end
 
 end
