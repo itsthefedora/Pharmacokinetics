@@ -13,30 +13,32 @@ bindRateFactor	= 1e4;		% / hr
 patientMass 	= 70;		% kg
 waterFraction	= 0.65;		% [0 1]
 
-dose 			= 600;		% mg
+dose 			= 500;		% mg
 
 bioavailability = 1.0;		% [0 1]
-%VdPerMass 		= 45 / (78.6 * waterFraction); % L / kg
-halfLifeE		= 4.9;		% hr
-kA 				= 5.73;		% / hr
+VdPerMass 		= 1.23;		% L / kg
+halfLifeE		= 9.81;		% hr
+halfLifeA 		= 0.29;		% hr
 
-Vc				= 26.8;		% L
-Vp 				= 17.3;		% L
-kCP				= 8.04;		% / hr
-kPC 			= 7.99;		% / hr
+Vc				= 66.88;	% L
+Vp 				= 50.34;	% L
+kCP				= 0.487;	% / hr
+kPC 			= 0.647;	% / hr
 bindingFraction = 0.31;		% [0 1]
 
 % Derived parameters
-%waterMass 		= patientMass * waterFraction;
-%Vd 				= VdPerMass * waterMass;	% L
+waterMass 		= patientMass * waterFraction;
+Vd 				= VdPerMass * waterMass;	% L
 effectiveDose 	= dose * bioavailability;	% mg
-kE 				= log(2) / halfLifeE;		% / hr
+kE = log(2) / halfLifeE;					% / hr
+kA = log(2) / halfLifeA;					% / hr
+
 kB 				= kE * bindRateFactor * bindingFraction;
 kU 				= kE * bindRateFactor * ( 1 - bindingFraction );
 
 %% Generate standard 2C model
 
-run( 'pk_subini_standard_2c_ivb.m' );
+run( 'pk_subini_standard_2c_oral.m' );
 
 
 
