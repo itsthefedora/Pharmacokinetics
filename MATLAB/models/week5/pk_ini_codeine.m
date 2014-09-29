@@ -13,7 +13,7 @@ bindRateFactor	= 1e4;		% / hr
 patientMass 	= 70;		% kg
 waterFraction	= 0.65;		% [0 1]
 
-dose 			= 50e3;		% mg
+dose 			= 10000;	% mg
 
 bioavailability = 0.90;		% [0 1]
 VdPerMass 		= 3.5;		% L / kg
@@ -39,7 +39,7 @@ VmaxMor		= 0.25 * 1e6;	% (pmol / min) / (mg enzyme)
 VmaxNorC 	= 6.8 * 1e3;	% (pmol / min) / (mg enzyme)
 
 massC6G 	= 500;	% mg
-massMor		= 500;	% mg
+massMor		= 1000;	% mg
 massNorC	= 500;	% mg
 
 % Derived parameters
