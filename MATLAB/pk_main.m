@@ -6,7 +6,7 @@
 % Fall 2014
 %=========================================================================%
 
-%clear all;
+clear all;
 addpath( pwd( ) );
 
 %% Set-up model variables
@@ -26,7 +26,7 @@ run( iniFullPath );
 %% Run model using ODE45
 
 f = @(t, y) pk_odefun( t, y, model );
-[ tResult, yResult ] = ode45( f, model.timeSpan, model.initialState );
+[ tResult, yResult ] = ode15s( f, model.timeSpan, model.initialState );
 
 % If we gave it analytic solution, do some comparisons
 
