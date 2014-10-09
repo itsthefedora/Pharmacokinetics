@@ -13,13 +13,13 @@ function [model] = pk_compute_model(inputModel)
 model = inputModel;
 
 %model.compartments = orderfields( model.compartments );
-model.compartmentNames = fieldnames( model.compartments );
-model.nCompartments = length( model.compartmentNames );
+model.compartmentNames 			= fieldnames( model.compartments );
+model.nCompartments 			= length( model.compartmentNames );
 
-model.fromLinkers = cell( model.nCompartments, 1 );
-model.toLinkers = cell( model.nCompartments, 1 );
-model.targetInputs = cell( model.nCompartments, 1 );
-model.compartmentDisplayNames = cell( model.nCompartments, 1 );
+model.fromLinkers 				= cell( model.nCompartments, 1 );
+model.toLinkers 				= cell( model.nCompartments, 1 );
+model.targetInputs 				= cell( model.nCompartments, 1 );
+model.compartmentDisplayNames 	= cell( model.nCompartments, 1 );
 
 %% Compute initial state
 
