@@ -20,5 +20,6 @@ ret.analyticParameters = struct;
 ret.compartments = struct;
 ret.connections = { };
 ret.inputs = { };
+ret.interactions = { };
 
 end
