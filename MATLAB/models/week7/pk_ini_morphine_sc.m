@@ -8,25 +8,23 @@
 
 %% Input parameters
 
+dose 			= 9.6;		% mg
+kA 				= 5.1;	% / hr
+bioavailability = 1;		% [0 1]
+
 bindRateFactor	= 1e4;		% / hr
 
 patientMass 	= 70;		% kg
 waterFraction	= 0.65;		% [0 1]
 
-dose 			= 50;	% mg
+VdPerMass 		= 4;		% L / kg
 
-bioavailability = 0.72;		% [0 1]
-VdPerMass 		= 2.7;		% L / kg
+bindingFraction = 0.35;		% [0 1]
 
-bindingFraction = 0.20;		% [0 1]
+kE 				= log(2) / (2.2);	% / hr
+kErFraction		= 0.9;
 
-kE 				= log(2) / 5.2;	% / hr
-kErFraction		= 0.282;
-kA 				= log(2) / 4.9;	% / hr
-
-kEODMT 			= log(2) / (9.0);	% / hr
-
-% Enzyme kinetics
+kEM6G 			= log(2) / (3.2);	% / hr
 
 % Derived parameters
 waterMass 		= patientMass * waterFraction;
@@ -38,24 +36,22 @@ kU 				= kE * bindRateFactor * ( 1 - bindingFraction );
 
 kEr				= kErFraction * kE;
 
-kRelODMT 	= 0.9;
-kRelOther 	= 0.1;
-kRelSum 	= kRelODMT + kRelOther;
+kRelM6G		= 0.1;
+kRelSum 	= kRelM6G;
 
 kEm 		= (1 - kErFraction) * kE;
-kMetODMT 	= (kRelODMT / kRelSum) * kEm;
-kEOther 	= (kRelOther / kRelSum) * kEm;
+kM6G 		= (kRelM6G / kRelSum) * kEm;
 
 %% Simulation
 
-model.timeSpan = [ 0 24 * 3 ];
+model.timeSpan = [ 0 24 ];
 
 %% Compartments
 
 x = pk_default_compartment( );
 x.volume = 1;
 x.initialAmount = effectiveDose;
-x.displayName = 'GI Tract';
+x.displayName = 'Pre-Body';
 model.compartments.gi = x;
 
 x = pk_default_compartment( );
@@ -73,8 +69,8 @@ model.compartments.bound = x;
 x = pk_default_compartment( );
 x.volume = 1;
 x.initialAmount = 0;
-x.displayName = 'ODMT';
-model.compartments.odmt = x;
+x.displayName = 'M6G';
+model.compartments.active = x;
 
 %% Connections
 
@@ -92,24 +88,20 @@ x.linker = pk_linear_linker( kEr );
 model.connections{ end + 1 } = x;
 
 % Enzyme metabolism to inactive
-x.from = 'body';
-x.to = '';
-x.linker = pk_linear_linker( kEOther );
-model.connections{ end + 1 } = x;
 
 % Enzyme metabolism to active
 x = pk_default_connection( );
 x.from = 'body';
-x.to = 'odmt';
-x.linker = pk_linear_linker( kMetODMT );
+x.to = 'active';
+x.linker = pk_linear_linker( kM6G );
+%x.linker = pk_mm_linker( AmMor, VmaxMora );
 model.connections{ end + 1 } = x;
-
 
 % Elimination of active
 x = pk_default_connection( );
-x.from = 'odmt';
+x.from = 'active';
 x.to = '';
-x.linker = pk_linear_linker( kEODMT );
+x.linker = pk_linear_linker( kEM6G );
 model.connections{ end + 1 } = x;
 
 % Plasma protein binding

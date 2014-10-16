@@ -21,6 +21,11 @@ model.toLinkers 				= cell( model.nCompartments, 1 );
 model.targetInputs 				= cell( model.nCompartments, 1 );
 model.compartmentDisplayNames 	= cell( model.nCompartments, 1 );
 
+% TODO: Kludge
+model.interactLinkers 			= { };
+model.interactInputs 			= { };
+model.interactOutputs 			= { };
+
 %% Compute initial state
 
 model.initialState = zeros( model.nCompartments, 1 );
@@ -31,6 +36,10 @@ for i = 1:model.nCompartments
 	model.toLinkers{ i } = { };
 	model.toLinkerSources{ i } = { };
 	model.targetFlows{ i } = { };
+
+	% TODO: Kludge
+	model.fromILinkers{ i } = { };
+	model.toILinkers{ i } = { };
 
 	model.compartmentDisplayNames{ i } = ...
 		model.compartments.(model.compartmentNames{i}).displayName;
@@ -55,6 +64,31 @@ for i = 1:length( model.connections )
 		model.toLinkers{ toIndex }{ end + 1 } = cur.linker;
 		model.toLinkerSources{ toIndex }{ end + 1 } = fromIndex;
 	end
+
+end
+
+%% Construct interaction cells
+% TODO: Kludge
+
+for i = 1:length( model.interactions )
+
+	cur = model.interactions{ i };
+
+	model.interactLinkers{ i } = cur.linker;
+
+	fromIdx = [];
+	toIdx = [];
+	for fromLoop = 1:length( cur.from )
+		fromLoopName = cur.from{ fromLoop };
+		fromIdx = [fromIdx find( ismember( model.compartmentNames, fromLoopName ) )];
+	end
+	for toLoop = 1:length( cur.to )
+		toLoopName = cur.to{ toLoop };
+		toIdx = [toIdx find( ismember( model.compartmentNames, toLoopName ) )];
+	end
+
+	model.interactInputs{ i } = fromIdx;
+	model.interactOutputs{ i } = toIdx;
 
 end
 

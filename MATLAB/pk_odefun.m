@@ -33,4 +33,34 @@ for i = 1:length( y )
 
 end
 
+% TODO: Kludge
+for i = 1:length( model.interactLinkers )
+
+	fromIdx = model.interactInputs{ i };
+	toIdx = model.interactOutputs{ i };
+
+	inVec = y( model.interactInputs{ i } );
+	fVal = model.interactLinkers{ i }( inVec );
+
+	% Subtract from inputs
+	for fromLoop = fromIdx;
+		yDot( fromLoop ) = yDot( fromLoop ) - fVal;
+	end
+	% Add to outputs
+	for toLoop = toIdx;
+		yDot( toLoop ) = yDot( toLoop ) + fVal;
+	end
+
 end
+
+end
+
+
+
+
+
+
+
+
+
+
