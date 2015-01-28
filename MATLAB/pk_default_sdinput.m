@@ -6,21 +6,14 @@
 % Fall 2014
 %=========================================================================%
 
-function [ret] = pk_default_model()
-%PK_DEFAULT_MODEL Summary of this function goes here
+function [ret] = pk_default_sdinput()
+%PK_DEFAULT_SDINPUT Summary of this function goes here
 %   Detailed explanation goes here
 
 ret = struct;
 
-ret.timeSpan = [0 10];
-
-ret.analyticType = '';
-ret.analyticParameters = struct;
-
-ret.compartments = struct;
-ret.connections = { };
-ret.inputs = { };
-ret.sdinputs = { };
-ret.interactions = { };
+ret.input = { '' };
+ret.target = '';
+ret.flow = pk_tanh_sd_flow( );
 
 end

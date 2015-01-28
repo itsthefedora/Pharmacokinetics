@@ -13,6 +13,7 @@ function [ret] = pk_default_interaction()
 ret = struct;
 
 ret.from = {};
+ret.depletes = [];
 ret.to = {};
 ret.linker = pk_product_linker(1.0);
 

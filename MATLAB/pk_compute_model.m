@@ -25,6 +25,11 @@ model.compartmentDisplayNames 	= cell( model.nCompartments, 1 );
 model.interactLinkers 			= { };
 model.interactInputs 			= { };
 model.interactOutputs 			= { };
+model.interactDepletes 			= { };
+
+model.sdFlowInputs 				= { };
+model.sdFlowTargets				= { };
+model.sdFlows 					= { };
 
 %% Compute initial state
 
@@ -36,10 +41,6 @@ for i = 1:model.nCompartments
 	model.toLinkers{ i } = { };
 	model.toLinkerSources{ i } = { };
 	model.targetFlows{ i } = { };
-
-	% TODO: Kludge
-	model.fromILinkers{ i } = { };
-	model.toILinkers{ i } = { };
 
 	model.compartmentDisplayNames{ i } = ...
 		model.compartments.(model.compartmentNames{i}).displayName;
@@ -90,6 +91,8 @@ for i = 1:length( model.interactions )
 	model.interactInputs{ i } = fromIdx;
 	model.interactOutputs{ i } = toIdx;
 
+	model.interactDepletes{ i } = cur.depletes;
+
 end
 
 %% Construct input cells
@@ -104,6 +107,27 @@ for i = 1:length( model.inputs )
 	end
 
 end
+
+% TODO: Kludge
+for i = 1:length( model.sdinputs )
+
+	cur = model.sdinputs{ i };
+	targetIndex = find( ismember( model.compartmentNames, cur.target ) );
+
+	inputIdx = [];
+	for inputLoop = 1:length( cur.input )
+		inputLoopName = cur.input{ inputLoop };
+		inputIdx = [inputIdx find( ismember( model.compartmentNames, inputLoopName ) )];
+	end
+
+	model.sdFlowInputs{ i } = inputIdx;
+	model.sdFlowTargets{ i } = targetIndex;
+
+	if ~isempty( targetIndex )
+		model.sdFlows{ i } = cur.flow;
+	end
+
+end	
 
 end
 

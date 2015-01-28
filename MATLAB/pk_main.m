@@ -6,7 +6,7 @@
 % Fall 2014
 %=========================================================================%
 
-clear all;
+clear functions;
 addpath( pwd( ) );
 
 %% Set-up model variables

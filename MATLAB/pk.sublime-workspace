@@ -4,6 +4,62 @@
 		"selected_items":
 		[
 			[
+				"pk_default",
+				"pk_default_connection"
+			],
+			[
+				"pk_",
+				"pk_linear_linker"
+			],
+			[
+				"kRel",
+				"kRelC6G"
+			],
+			[
+				"Am",
+				"AmC6G"
+			],
+			[
+				"kE",
+				"kE"
+			],
+			[
+				"VmaxMor",
+				"VmaxMora"
+			],
+			[
+				"Vmax",
+				"VmaxC6Ga"
+			],
+			[
+				"Km",
+				"KmC6G"
+			],
+			[
+				"VmaxHLM",
+				"VmaxHLMa"
+			],
+			[
+				"mass",
+				"massHLM"
+			],
+			[
+				"Vm",
+				"Vmax1A1a"
+			],
+			[
+				"initial",
+				"initialAmount"
+			],
+			[
+				"comp",
+				"compartments"
+			],
+			[
+				"pk_de",
+				"pk_default_compartment"
+			],
+			[
 				"compartment",
 				"compartmentNames"
 			],
@@ -64,37 +120,10 @@
 	"buffers":
 	[
 		{
-			"file": "pk_main.m",
+			"file": "pk_linear_linker.m",
 			"settings":
 			{
-				"buffer_size": 858,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pk_ini_test.m",
-			"settings":
-			{
-				"buffer_size": 677,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pk_odefun.m",
-			"settings":
-			{
-				"buffer_size": 764,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "%=========================================================================%\n% Pharmacokinetic Model\n% => Default compartment parameters.\n% \n% [Authors]\n% Fall 2014\n%=========================================================================%\n\nfunction [model] = pk_compute_model(inputModel)\n%PK_COMPUTE_MODEL Summary of this function goes here\n%   Detailed explanation goes here\n\nmodel = inputModel;\n\n%model.compartments = orderfields( model.compartments );\nmodel.compartmentNames = fieldnames( model.compartments );\nmodel.nCompartments = length( model.compartmentNames );\n\nmodel.fromLinkers = cell( model.nCompartments, 1 );\nmodel.toLinkers = cell( model.nCompartments, 1 );\n\n%model.initialState = \n\nfor i = 1:model.nCompartments\n\n	model.fromLinkers{ i } = { };\n	model.toLinkers{ i } = { };\n\n	model\n\nend\n\nfor i = 1:length( model.connections )\n\n	cur = model.connections{i};\n	fromIndex = find( ismember( model.compartmentNames, cur.from ) );\n	toIndex = find( ismember( model.compartmentNames, cur.to ) );\n	\n	if ~isempty( fromIndex )\n		model.fromLinkers{ fromIndex }{ end + 1 } = cur.linker;\n	end\n	if ~isempty( toIndex )\n		model.toLinkers{ toIndex }{ end + 1 } = cur.linker;\n	end\n\nend\n\nend\n\n\n\n\n\n\n\n\n\n\n\n",
-			"file": "pk_compute_model.m",
-			"file_size": 1163,
-			"file_write_time": 130552162010000000,
-			"settings":
-			{
-				"buffer_size": 1197,
+				"buffer_size": 408,
 				"line_ending": "Unix"
 			}
 		}
@@ -144,8 +173,75 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
+	"expanded_folders":
+	[
+		"/Users/Jim/Documents/Git/PK/MATLAB",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week5",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week6",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week7",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week8",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week9"
+	],
 	"file_history":
 	[
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week9/pk_ini_midaz_1c.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week9/pk_ini_remi_1c.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_pulsed_flow.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_dsphere_linker.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week8/pk_ini_apap_tr.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week7/pk_ini_morphine_td.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_default_model.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_main.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_product_linker.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_compute_model.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_odefun.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week7/pk_ini_morphine_direct.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week7/pk_ini_apap_toxicity_rev2.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week6/pk_ini_codeine_rev2.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week6/pk_ini_tramadol.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week5/pk_ini_codeine.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_mm_linker.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week5/pk_ini_apap_toxicity.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week5/pk_ini_amphetamine_1c.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_default_interaction.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week4/pk_ini_apap_toxicity.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week4/pk_ini_panto_2c_ivb.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week4/pk_ini_levo_2c_oral.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week4/pk_ini_linezolid_2c_oral.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week4/pk_ini_linezolid_2c_ivb.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week4/pk_subini_standard_2c_oral.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week4/pk_ini_levo_2c_ivb.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week4/pk_ini_clari_2c_ivb.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week4/pk_ini_metro_2c_ivb.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week4/pk_subini_standard_2c_ivb.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week4/pkp_ini_standard_2c_ivb.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/week4/pk_ini_fluco_2c_ivb.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_linezolid_oral.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_test.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_plasmabind.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_clari_ivb.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_clari_oral.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_panto_ivb.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_fluco_ivb.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_linezolid_ivb.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_metro_ivb.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_levo_ivb.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_fluco_oral.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_panto_oral.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_metro_oral.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_digoxin_oral.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_levo_oral.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_moxi_oral.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_cipro_oral.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_linezolid.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_constant_flow.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_default_input.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_one.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_levo.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/models/pk_ini_moxi.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_ini_one.m",
+		"/Users/Jim/Documents/Git/PK/MATLAB/pk_ini_test.m",
 		"/Users/Jim/Documents/Git/PK/MATLAB/pk_linear_linker.m",
 		"/Users/Jim/Documents/Git/PK/MATLAB/pk_default_connection.m",
 		"/Users/Jim/Documents/Git/PK/MATLAB/pk_default_compartment.m",
@@ -184,7 +280,7 @@
 	],
 	"find":
 	{
-		"height": 32.0
+		"height": 40.0
 	},
 	"find_in_files":
 	{
@@ -198,6 +294,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"dose",
+			"]\n",
 			"allData",
 			"doResponse",
 			"trialPSDuration",
@@ -235,52 +333,24 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "pk_main.m",
+					"file": "pk_linear_linker.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 858,
+						"buffer_size": 408,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								813,
-								813
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Matlab/Matlab.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 288.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "pk_ini_test.m",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 677,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								638,
-								638
+								408,
+								408
 							]
 						],
 						"settings":
@@ -292,63 +362,6 @@
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "pk_odefun.m",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 764,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								718,
-								718
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Matlab/Matlab.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "pk_compute_model.m",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1197,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								676,
-								676
-							]
-						],
-						"settings":
-						{
-							"auto_name": "",
-							"syntax": "Packages/Matlab/Matlab.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 213.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -434,8 +447,8 @@
 	"show_minimap": true,
 	"show_open_files": true,
 	"show_tabs": true,
-	"side_bar_visible": false,
-	"side_bar_width": 219.0,
+	"side_bar_visible": true,
+	"side_bar_width": 257.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

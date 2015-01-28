@@ -33,18 +33,40 @@ for i = 1:length( y )
 
 end
 
-% TODO: Kludge
+% TODO: All this is super kludgey
+
+for i = 1:length( model.sdFlows )
+
+	inputIdx = model.sdFlowInputs{ i };
+	targetIdx = model.sdFlowTargets{ i };
+
+	inVec = y( inputIdx );
+	fVal = model.sdFlows{ i }( t, inVec );
+
+	yDot( targetIdx ) = yDot( targetIdx ) + fVal;
+
+end
+
 for i = 1:length( model.interactLinkers )
 
 	fromIdx = model.interactInputs{ i };
 	toIdx = model.interactOutputs{ i };
 
-	inVec = y( model.interactInputs{ i } );
+	inVec = y( fromIdx );
 	fVal = model.interactLinkers{ i }( inVec );
 
 	% Subtract from inputs
-	for fromLoop = fromIdx;
-		yDot( fromLoop ) = yDot( fromLoop ) - fVal;
+	if isempty( model.interactDepletes{ i } )
+		for fromLoop = fromIdx;
+			yDot( fromLoop ) = yDot( fromLoop ) - fVal;
+		end
+	else
+		for j = 1:length(fromIdx);
+			if model.interactDepletes{ i }( j )
+				fromLoop = fromIdx( j );
+				yDot( fromLoop ) = yDot( fromLoop ) - fVal;
+			end
+		end
 	end
 	% Add to outputs
 	for toLoop = toIdx;
