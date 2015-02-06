@@ -21,7 +21,7 @@ waterFraction	= 0.65;		% [0 1]
 
 VdPerMass 		= 4;		% L / kg
 
-kE 				= log(2) / (24);	% / hr
+kE 				= log(2) / (48);	% / hr
 kErFraction		= 1;
 
 % Derived parameters
