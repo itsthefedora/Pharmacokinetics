@@ -27,7 +27,7 @@ run( iniFullPath );
 
 f = @(t, y) pk_odefun( t, y, model );
 % TODO: Make this part of model.
-odeOpts = odeset( 'MaxStep', 0.1 );
+odeOpts = odeset( 'MaxStep', model.maxStep );
 [ tResult, yResult ] = ode15s( f, model.timeSpan, model.initialState, odeOpts );
 
 % If we gave it analytic solution, do some comparisons

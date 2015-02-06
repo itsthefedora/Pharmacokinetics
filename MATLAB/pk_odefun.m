@@ -17,12 +17,12 @@ for i = 1:length( y )
 	% Inter-compartment connections
 
 	for j = 1:length( model.fromLinkers{ i } )
-		yDot( i ) = yDot( i ) - model.fromLinkers{ i }{ j }( y( i ) );
+		yDot( i ) = yDot( i ) - model.fromLinkers{ i }{ j }( y( i ), t );
 	end
 
 	for j = 1:length( model.toLinkers{ i } )
 		yDot( i ) = yDot( i ) + model.toLinkers{ i }{ j }( ...
-			y( model.toLinkerSources{ i }{ j } ) );
+			y( model.toLinkerSources{ i }{ j } ), t );
 	end
 
 	% Flow inputs

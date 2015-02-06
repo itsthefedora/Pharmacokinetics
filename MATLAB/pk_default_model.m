@@ -13,6 +13,7 @@ function [ret] = pk_default_model()
 ret = struct;
 
 ret.timeSpan = [0 10];
+ret.maxStep = 0.1;
 
 ret.analyticType = '';
 ret.analyticParameters = struct;
