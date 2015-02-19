@@ -31,6 +31,10 @@ model.sdFlowInputs 				= { };
 model.sdFlowTargets				= { };
 model.sdFlows 					= { };
 
+%% Generate ODE solver options
+
+model.odeOpts = odeset( 'MaxStep', model.maxStep );
+
 %% Compute initial state
 
 model.initialState = zeros( model.nCompartments, 1 );

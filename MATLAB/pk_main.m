@@ -23,12 +23,13 @@ run( iniFullPath );
 
 [model] = pk_compute_model( model );
 
-%% Run model using ODE45
+%% Run model using ODE solver
 
+% Generate ODE function handle.
 f = @(t, y) pk_odefun( t, y, model );
-% TODO: Make this part of model.
-odeOpts = odeset( 'MaxStep', model.maxStep );
-[ tResult, yResult ] = ode15s( f, model.timeSpan, model.initialState, odeOpts );
+
+% Simulate!
+[ tResult, yResult ] = ode15s( f, model.timeSpan, model.initialState, model.odeOpts );
 
 % If we gave it analytic solution, do some comparisons
 
