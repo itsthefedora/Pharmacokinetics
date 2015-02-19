@@ -6,22 +6,47 @@
 % Fall 2014
 %=========================================================================%
 
+function [tResult, yResult] = pk_main(varargin)
+%PK_MAIN Summary of this function goes here
+%   Detailed explanation goes here
+
+%% Initialization
+
+% Deal with MATLAB's crappy environment handling
 clear functions;
 addpath( pwd( ) );
 
-%% Set-up model variables
+% Parameter defaults
+doPlots = true;
 
+% Parse input arguments
+switch length(varargin)
+    
+    case 0
+        %
+    
+    case 1
+        doPlots = varargin{1};
+        
+    otherwise
+        error('Invalid number of arguments!');
+    
+end
+
+
+%% Set-up model
+
+% Generate default model
 model = pk_default_model( );
 
-%% Open and run INI file
-
+% Open and run INI file
 [ iniFN, iniPath ] = uigetfile( );
 iniFullPath = fullfile( iniPath, iniFN );
 run( iniFullPath );
 
-%% Compute model variables
-
+% Compute model structure
 [model] = pk_compute_model( model );
+
 
 %% Run model using ODE solver
 
@@ -31,20 +56,45 @@ f = @(t, y) pk_odefun( t, y, model );
 % Simulate!
 [ tResult, yResult ] = ode15s( f, model.timeSpan, model.initialState, model.odeOpts );
 
-% If we gave it analytic solution, do some comparisons
 
-switch model.analyticType
+%% Plot result
 
-% IV bolus injection
-case 'ivb'
-	tAnalytic = tResult;
-	yAnalytic = model.analyticParameters.A0 * ...
-		exp( -model.analyticParameters.kE * tAnalytic );
+if doPlots
+
+    figure( 'position', [ 10 10 1024 600 ] );
+    plot( tResult, yResult, 'linewidth', 2 );
+    legend( model.compartmentDisplayNames, 'fontsize', 24 );
+    xlabel( 'Time (h)', 'fontsize', 24 );
+    ylabel( 'Amount of drug (mg)', 'fontsize', 24 );
+    set( gca, 'fontsize', 24 );
+    set( gca, 'xlim', model.timeSpan );
+
+    figure( 'position', [ 110 10 1024 600 ] );
+    semilogy( tResult, yResult, 'linewidth', 2 );
+    legend( model.compartmentDisplayNames, 'fontsize', 24 );
+    xlabel( 'Time (h)', 'fontsize', 24 );
+    ylabel( 'Amount of drug (mg)', 'fontsize', 24 );
+    set( gca, 'fontsize', 24 );
+    set( gca, 'xlim', model.timeSpan );
+    set( gca, 'ylim', [ 1e1 1e3 ] );
 
 end
 
+
+%% If we gave it an analytic solution, do some comparisons
+
 if ~isempty( model.analyticType )
 
+    switch model.analyticType
+
+    % IV bolus injection
+    case 'ivb'
+        tAnalytic = tResult;
+        yAnalytic = model.analyticParameters.A0 * ...
+            exp( -model.analyticParameters.kE * tAnalytic );
+
+    end
+    
 	tEuler = linspace( tAnalytic( 1 ), tAnalytic( end ), 1e3 );
 	dt = tEuler( 2 ) - tEuler ( 1 );
 	yEuler( 1, : ) = model.initialState';
@@ -56,29 +106,6 @@ if ~isempty( model.analyticType )
 
 	tEulerDisp = tResult;
 	yEulerDisp = linterp( tEuler, yEuler, tEulerDisp )';
-
-end
-
-%% Plot result
-
-figure( 'position', [ 10 10 1024 600 ] );
-plot( tResult, yResult, 'linewidth', 2 );
-legend( model.compartmentDisplayNames, 'fontsize', 24 );
-xlabel( 'Time (h)', 'fontsize', 24 );
-ylabel( 'Amount of drug (mg)', 'fontsize', 24 );
-set( gca, 'fontsize', 24 );
-set( gca, 'xlim', model.timeSpan );
-
-figure( 'position', [ 110 10 1024 600 ] );
-semilogy( tResult, yResult, 'linewidth', 2 );
-legend( model.compartmentDisplayNames, 'fontsize', 24 );
-xlabel( 'Time (h)', 'fontsize', 24 );
-ylabel( 'Amount of drug (mg)', 'fontsize', 24 );
-set( gca, 'fontsize', 24 );
-set( gca, 'xlim', model.timeSpan );
-set( gca, 'ylim', [ 1e1 1e3 ] );
-
-if ~isempty( model.analyticType )
 
 	figure( 'position', [ 110 110 1024 600 ] );
 	plot( tAnalytic, yAnalytic( :, end ), tEulerDisp, yEulerDisp( :, end ), ...

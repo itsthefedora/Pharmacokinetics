@@ -35,7 +35,7 @@ kEr				= kErFraction * kE;
 
 nDays = 14;
 model.timeSpan = [ 0, 24 * nDays ];
-model.maxStep = doseDuration / 2;
+%model.maxStep = doseDuration / 2;
 
 %% Compartments
 
