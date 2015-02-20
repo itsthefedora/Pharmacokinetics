@@ -115,8 +115,11 @@ for i = 1:nChops
     hold(hLocal, 'on'); tFirst = tResultFast{1}; yFirst = yResultFast{1};
     plot(hLocal, tFirst, 100 * yFirst(:, 3)/7.24, 'k--', 'linewidth', 2);
     set(hLocal, 'xlim', [2*24, 3*24]);
+    set(hLocal, 'fontsize', 24);
+    
     plot(hGlobal, tResult, yResult, 'linewidth', 2);
     set(hGlobal, 'xlim', fullTime);
+    set(hGlobal, 'fontsize', 24);
     drawnow;
     
 end
