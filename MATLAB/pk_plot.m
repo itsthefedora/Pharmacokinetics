@@ -7,7 +7,7 @@
 %=========================================================================%
 
 
-function [ hFig ] = pk_plot( tResult, yResult, varargin )
+function [ hFig ] = pk_plot( tResult, yResult, model, varargin )
 %PK_PLOT Summary of this function goes here
 %   Detailed explanation goes here
 

@@ -24,15 +24,31 @@ molarMassGcn = 3485;
 
 %% Parameters
 
-% Global
+% -- Global
 
+% About the patient
 patientMass 	= 70;		% kg
 waterFraction	= 0.65;		% [0 1]
 waterMass 		= waterFraction * patientMass;
+fatVFraction    = 0.10;     % [0 1]
+fatVMass        = fatVFraction * patientMass;
 
-% Slow
+% -- Slow
 
-kEGlut4TF = 1.0;        % / day
+% Normal levels
+normalGlut4TF   = 1.0;  % a.u.
+
+% "Sink" terms
+kEGlut4TF       = 1.0;      % / day
+kEFatV          = 1.0;
+
+% "Source" terms
+qGlut4TFMax     = kEGlut4TF * normalGlut4TF;    % TODO
+qGlut4TFBase    = qGlut4TFMax * 0.1;
+glut4TFShape    = 1.0;
+glut4TFCenter   = fatVMass * 1.2;
+
+qInFatV         = kEFatV * fatVMass;            % TODO
 
 % Fast
 
@@ -90,14 +106,15 @@ betaShape = betaCenter;
 alphaShape = alphaCenter;
 
 %=========================================================================%
+%% GLOBAL
 
+model.slow.timeSpan = [0 28];
+model.fast.timeSpan = [0 3];
 
-%% Set-up simulation
+model.fastSpacing = 7;
 
-model.slow.timeSpan = [0 365];
-model.fast.timeSpan = [0 7];
-
-model.fastSpacing = 14;
+model.updateSlow = @( inStruct ) pk_gluc_updateSlow( model, inStruct );
+model.updateFast = @( inStruct ) pk_gluc_updateFast( model, inStruct );
 
 %=========================================================================%
 %% SLOW MODEL
@@ -114,19 +131,46 @@ model.slow.compartments.glut4tf = x;
 % Visceral fat
 x = pk_default_compartment( );
 x.volume = Vgi;
-x.initialAmount = 0;
-x.displayName = 'GI GLU';
-model.slow.compartments.giGlu = x;
+x.initialAmount = fatVMass;
+x.displayName = 'Fat (V)';
+model.slow.compartments.fatV = x;
 
 
 %% Connections
 
 % Degradation
 x = pk_default_connection( );
-x.from = 'bodyGlu';
+x.from = 'glut4tf';
 x.to = '';
 x.linker = pk_linear_linker( kEGlut4TF );
 model.slow.connections{ end + 1 } = x;
+
+% Exercise
+x = pk_default_connection( );
+x.from = 'fatV';
+x.to = '';
+x.linker = pk_linear_linker( kEFatV );
+model.slow.connections{ end + 1 } = x;
+
+
+%% Inputs
+
+% Eating
+x = pk_default_input( );
+x.target = 'fatV';
+x.flow = pk_constant_flow( qInFatV );
+model.slow.inputs{ end + 1 } = x;
+
+% TF Production
+x = pk_default_input( );
+x.target = 'glut4tf';
+x.flow = pk_constant_flow( qGlut4TFBase );
+model.slow.inputs{ end + 1 } = x;
+x = pk_default_sdinput( );
+x.input = { 'fatV' };
+x.target = 'glut4tf';
+x.flow = pk_tanh_sd_flow( (qGlut4TFMax - qGlut4TFBase), -glut4TFShape, glut4TFCenter );
+model.slow.sdinputs{ end + 1 } = x;
 
 
 %=========================================================================%
@@ -264,24 +308,22 @@ model.fast.inputs{ end + 1 } = x;
 x = pk_default_input( );
 x.target = 'bodyIns';
 x.flow = pk_constant_flow( qInsBase );
-model.inputs{ end + 1 } = x;
-
+model.fast.inputs{ end + 1 } = x;
 x = pk_default_sdinput( );
 x.input = { 'bodyGlu' };
 x.target = 'bodyIns';
 x.flow = pk_tanh_sd_flow( (qInsMax - qInsBase), betaShape, betaCenter );
-model.sdinputs{ end + 1 } = x;
+model.fast.sdinputs{ end + 1 } = x;
 
 x = pk_default_input( );
 x.target = 'bodyGcn';
 x.flow = pk_constant_flow( qGcnBase );
-model.inputs{ end + 1 } = x;
-
+model.fast.inputs{ end + 1 } = x;
 x = pk_default_sdinput( );
 x.input = { 'bodyGlu' };
 x.target = 'bodyGcn';
 x.flow = pk_tanh_sd_flow( (qGcnMax - qGcnBase), -alphaShape, alphaCenter );
-model.sdinputs{ end + 1 } = x;
+model.fast.sdinputs{ end + 1 } = x;
 
 
 

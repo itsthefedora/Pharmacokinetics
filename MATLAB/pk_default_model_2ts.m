@@ -16,9 +16,9 @@ ret.slow = pk_default_model();
 ret.fast = pk_default_model();
 
 ret.slow.timeSpan = [0 365];    % Days
-ret.fast.timeSpan = [0 7];      % Hours
+ret.fast.timeSpan = [0 7*24];   % Hours
 
-ret.fastSpacing = 14;           % Hours
+ret.fastSpacing = 14;           % Days
 
 
 end
