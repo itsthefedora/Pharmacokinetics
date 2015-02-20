@@ -40,15 +40,15 @@ end
 model = pk_default_model( );
 
 % Open and run INI file
-[ iniFN, iniPath ] = uigetfile( );
+[ iniFN, iniPath ] = uigetfile( '*.ini' );
 iniFullPath = fullfile( iniPath, iniFN );
 run( iniFullPath );
 
 % Compute model structure
-[model] = pk_compute_model( model );
+[ model ] = pk_compute_model( model );
 
 
-%% Run model using ODE solver
+%% Run model
 
 % Generate ODE function handle.
 f = @(t, y) pk_odefun( t, y, model );
@@ -61,22 +61,7 @@ f = @(t, y) pk_odefun( t, y, model );
 
 if doPlots
 
-    figure( 'position', [ 10 10 1024 600 ] );
-    plot( tResult, yResult, 'linewidth', 2 );
-    legend( model.compartmentDisplayNames, 'fontsize', 24 );
-    xlabel( 'Time (h)', 'fontsize', 24 );
-    ylabel( 'Amount of drug (mg)', 'fontsize', 24 );
-    set( gca, 'fontsize', 24 );
-    set( gca, 'xlim', model.timeSpan );
-
-    figure( 'position', [ 110 10 1024 600 ] );
-    semilogy( tResult, yResult, 'linewidth', 2 );
-    legend( model.compartmentDisplayNames, 'fontsize', 24 );
-    xlabel( 'Time (h)', 'fontsize', 24 );
-    ylabel( 'Amount of drug (mg)', 'fontsize', 24 );
-    set( gca, 'fontsize', 24 );
-    set( gca, 'xlim', model.timeSpan );
-    set( gca, 'ylim', [ 1e1 1e3 ] );
+    pk_plot( tResult, yResult );
 
 end
 

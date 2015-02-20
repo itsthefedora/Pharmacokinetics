@@ -15,8 +15,11 @@ ret = struct;
 ret.timeSpan = [0 10];
 ret.maxStep = 0.1;
 
+% TODO: Necessary?
 ret.analyticType = '';
 ret.analyticParameters = struct;
+
+ret.constants = struct;
 
 ret.compartments = struct;
 ret.connections = { };
