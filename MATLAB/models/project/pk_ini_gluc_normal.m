@@ -9,10 +9,10 @@
 
 %% Pathology
 
-absorptionFactor = 0.25;
+absorptionFactor    = 1.0;  %0.25;
 
-insResistFactor = 0.3;
-betaDecayFactor = 1.2;
+insResistFactor     = 1.0;  %0.3;
+betaDecayFactor     = 1.0;  %1.2;
 
 
 %% Physical constants
@@ -35,7 +35,7 @@ glycogenMass = glycogenPerMass * liverMass * 10; % g
 fracFruGlu = 0.35;		% 0.27 - 0.37
 
 doseGlu = 30;			% g
-doseFru = 0 / fracFruGlu;			% g
+doseFru = 30 / fracFruGlu;			% g
 doseDuration = 30 / 60;	% hr
 doseSpacing = 8;		% hr
 

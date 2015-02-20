@@ -38,16 +38,17 @@ fatVMass        = fatVFraction * patientMass;
 normalGlut4TF   = 1.0;  % a.u.
 
 % "Sink" terms
-kEGlut4TF       = 1.0;      % / day
-kEFatV          = 1.0;
+kEGlut4TF       = log(2) / 15;      % / day
+kEFatV          = log(2) / 60;
 
 % "Source" terms
 qGlut4TFMax     = kEGlut4TF * normalGlut4TF;    % TODO
 qGlut4TFBase    = qGlut4TFMax * 0.1;
-glut4TFShape    = 1.0;
-glut4TFCenter   = fatVMass * 1.2;
+glut4TFShape    = 3.0;
+glut4TFCenter   = fatVMass * 1.5;
 
-qInFatV         = kEFatV * fatVMass;            % TODO
+qInFatVBase     = kEFatV * fatVMass;            % TODO
+qInFatVMax      = qInFatVBase * 2.0;
 
 % Fast
 
@@ -58,7 +59,7 @@ glycogenMass = glycogenPerMass * liverMass * 10; % g
 fracFruGlu = 0.35;		% 0.27 - 0.37
 
 doseGlu = 30;			% g
-doseFru = 0 / fracFruGlu;			% g
+doseFru = 30 / fracFruGlu;			% g
 doseDuration = 30 / 60;	% hr
 doseSpacing = 8;		% hr
 
@@ -107,13 +108,23 @@ alphaShape = alphaCenter;
 %=========================================================================%
 %% GLOBAL
 
-model.slow.timeSpan = [0 28];
-model.fast.timeSpan = [0 3];
+% For slow update
+model.globals.kFruGlu       = kFruGlu;
+model.globals.fruIdx        = 4;
+model.globals.qInFatVBase   = qInFatVBase;
+model.globals.qInFatVMax    = qInFatVMax;
 
-model.fastSpacing = 7;
+% For fast update
+model.globals.kGluGly       = kGluGly;
+model.globals.glut4tfIdx    = 1;
 
-model.updateSlow = @( inStruct ) pk_gluc_updateSlow( model, inStruct );
-model.updateFast = @( inStruct ) pk_gluc_updateFast( model, inStruct );
+model.slow.timeSpan = [0 365];
+model.fast.timeSpan = [0 3*24];
+
+model.fastSpacing = 14;
+
+model.updateSlow = @( m, inStruct ) pk_gluc_updateSlow( m, inStruct );
+model.updateFast = @( m, inStruct ) pk_gluc_updateFast( m, inStruct );
 
 %=========================================================================%
 %% SLOW MODEL
@@ -157,8 +168,9 @@ model.slow.connections{ end + 1 } = x;
 % Eating
 x = pk_default_input( );
 x.target = 'fatV';
-x.flow = pk_constant_flow( qInFatV );
+x.flow = pk_constant_flow( qInFatVBase );
 model.slow.inputs{ end + 1 } = x;
+model.globals.idx_inputFatV = length(model.slow.inputs);
 
 % TF Production
 x = pk_default_input( );
@@ -280,6 +292,7 @@ x.depletes = [true false];
 x.to = {'tissueGly'};
 x.linker = pk_product_linker( kGluGly );
 model.fast.interactions{ end + 1 } = x;
+model.globals.idx_intGluGly = length(model.fast.interactions);
 
 % Tissue GLY -> Body Glu
 x = pk_default_interaction( );

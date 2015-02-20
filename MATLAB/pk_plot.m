@@ -36,19 +36,21 @@ end
 figure( 'position', [ 10 10 1024 600 ] );
 plot( tResult, yResult, 'linewidth', 2 );
 legend( model.compartmentDisplayNames, 'fontsize', 24 );
-xlabel( 'Time (h)', 'fontsize', 24 );
-ylabel( 'Amount of drug (mg)', 'fontsize', 24 );
+%xlabel( 'Time (h)', 'fontsize', 24 );
+%ylabel( 'Amount of drug (mg)', 'fontsize', 24 );
 set( gca, 'fontsize', 24 );
 set( gca, 'xlim', model.timeSpan );
 
-figure( 'position', [ 110 10 1024 600 ] );
-semilogy( tResult, yResult, 'linewidth', 2 );
-legend( model.compartmentDisplayNames, 'fontsize', 24 );
-xlabel( 'Time (h)', 'fontsize', 24 );
-ylabel( 'Amount of drug (mg)', 'fontsize', 24 );
-set( gca, 'fontsize', 24 );
-set( gca, 'xlim', model.timeSpan );
-set( gca, 'ylim', [ 1e1 1e3 ] );
+if (doLog)
+    figure( 'position', [ 110 10 1024 600 ] );
+    semilogy( tResult, yResult, 'linewidth', 2 );
+    legend( model.compartmentDisplayNames, 'fontsize', 24 );
+    %xlabel( 'Time (h)', 'fontsize', 24 );
+    %ylabel( 'Amount of drug (mg)', 'fontsize', 24 );
+    set( gca, 'fontsize', 24 );
+    set( gca, 'xlim', model.timeSpan );
+    set( gca, 'ylim', [ 1e1 1e3 ] );
+end
 
 
 end

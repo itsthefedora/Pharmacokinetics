@@ -15,6 +15,8 @@ ret = struct;
 ret.slow = pk_default_model();
 ret.fast = pk_default_model();
 
+ret.globals = struct;
+
 ret.slow.timeSpan = [0 365];    % Days
 ret.fast.timeSpan = [0 7*24];   % Hours
 

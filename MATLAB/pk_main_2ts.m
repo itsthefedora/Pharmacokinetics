@@ -54,16 +54,24 @@ run( iniFullPath );
 
 % Chop up time into segments
 fullTime = model.slow.timeSpan;
-timeChop = fulltime(1):model.fastSpacing:fullTime(2);
+timeChop = fullTime(1):model.fastSpacing:fullTime(2);
+nChops = length(timeChop) - 1;
 
 % Set up final result vectors
-tResult = [ ];
-yResult = [ ];
+tResult = [ 0 ];
+yResult = [ model.slow.initialState' ];
 tResultFast = { };
 yResultFast = { };
 
+hFig = figure('position', [100 100 1600 600]);
+hLocal = subplot( 1, 2, 1 );
+hGlobal = subplot( 1, 2, 2 );
+
 % For each segment ...
-for i = 1:( length(timeChop) - 1 )
+for i = 1:nChops
+    
+    % Debug display.
+    disp(['Running cycle ' num2str(i) ' of ' num2str(nChops)]);
     
     % Run fast model.
     fFast = @(t, y) pk_odefun( t, y, model.fast );
@@ -72,17 +80,44 @@ for i = 1:( length(timeChop) - 1 )
     yResultFast{i} = ySegFast;
     
     % Update slow model.
-    % ...
+    inStruct = struct;
+    
+    inStruct.data = struct;
+    inStruct.data.t = tSegFast;
+    inStruct.data.y = ySegFast;
+    
+    model = model.updateSlow( model, inStruct );
+    [ model.slow ] = pk_compute_model( model.slow );
+    
+    initialState = yResult(end, :);
     
     % Run slow model.
     fSlow = @(t, y) pk_odefun( t, y, model.slow );
     curTimeSpan = [timeChop(i) timeChop(i+1)];
-    [ tSeg, ySeg ] = ode15s( fSlow, curTimeSpan, model.slow.initialState, model.slow.odeOpts );
+    [ tSeg, ySeg ] = ode15s( fSlow, curTimeSpan, initialState, model.slow.odeOpts );
     tResult = [tResult( 1:(end-1), : ); tSeg];
     yResult = [yResult( 1:(end-1), : ); ySeg];
     
     % Update fast model.
-    % ...
+    inStruct = struct;
+    
+    inStruct.data = struct;
+    inStruct.data.t = tSeg;
+    inStruct.data.y = ySeg;
+    
+    model = model.updateFast( model, inStruct );
+    [ model.fast ] = pk_compute_model( model.fast );
+    
+    % TEMP:
+    % Plot.
+    cla(hLocal);
+    plot(hLocal, tSegFast, 100 * ySegFast(:, 3)/7.24, 'k-', 'linewidth', 2);
+    hold(hLocal, 'on'); tFirst = tResultFast{1}; yFirst = yResultFast{1};
+    plot(hLocal, tFirst, 100 * yFirst(:, 3)/7.24, 'k--', 'linewidth', 2);
+    set(hLocal, 'xlim', [2*24, 3*24]);
+    plot(hGlobal, tResult, yResult, 'linewidth', 2);
+    set(hGlobal, 'xlim', fullTime);
+    drawnow;
     
 end
 
@@ -100,7 +135,7 @@ f = @(t, y) pk_odefun( t, y, model.slow );
 
 if doPlots
     
-    pk_plot( tResult, yResult, model.slow );
+    pk_plot( tResult, yResult, model.slow, false );
     
 end
 
