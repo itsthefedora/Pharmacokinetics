@@ -19,8 +19,6 @@ ret.maxStep = 0.1;
 ret.analyticType = '';
 ret.analyticParameters = struct;
 
-ret.constants = struct;
-
 ret.compartments = struct;
 ret.connections = { };
 ret.inputs = { };

@@ -40,7 +40,7 @@ end
 model = pk_default_model( );
 
 % Open and run INI file
-[ iniFN, iniPath ] = uigetfile( '*.ini' );
+[ iniFN, iniPath ] = uigetfile( 'pk_ini_*.m' );
 iniFullPath = fullfile( iniPath, iniFN );
 run( iniFullPath );
 
