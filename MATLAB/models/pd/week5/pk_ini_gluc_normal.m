@@ -11,7 +11,7 @@
 
 absorptionFactor    = 1.0;  %0.25;
 
-insResistFactor     = 1.0;  %0.3;
+insResistFactor     = 0.3;  %0.3;
 betaDecayFactor     = 1.0;  %1.2;
 
 desequestFactor     = 1.0;
@@ -36,8 +36,8 @@ glycogenMass = glycogenPerMass * liverMass * 10; % g
 
 fracFruGlu = 0.35;		% 0.27 - 0.37
 
-doseGlu = 30;			% g
-doseFru = 30 / fracFruGlu;			% g
+doseGlu = 60;			% g
+doseFru = 0 / fracFruGlu;			% g
 doseDuration = 30 / 60;	% hr
 doseSpacing = 8;		% hr
 
@@ -54,7 +54,7 @@ kEGcn = 2.29;			% / hr
 % ** TODO: FIND ALL OF THESE. **
 deepFactor      = 0.2;       % TODO: Be more nuanced
 distFactor      = 3.0;
-redistFactor    = 0.5;
+redistFactor    = 1.0;
 
 kDSGlu = kAGlu;
 kRSGlu = kDSGlu * redistFactor;

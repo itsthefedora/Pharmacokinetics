@@ -11,7 +11,7 @@
 
 absorptionFactor    = 1.0;  %0.25;
 
-insResistFactor     = 1.0;  %0.3;
+insResistFactor     = 0.3;  %0.3;
 betaDecayFactor     = 1.0;  %1.2;
 
 desequestFactor     = 1.0;
@@ -36,8 +36,8 @@ glycogenMass = glycogenPerMass * liverMass * 10; % g
 
 fracFruGlu = 0.35;		% 0.27 - 0.37
 
-doseGlu = 30;			% g
-doseFru = 30 / fracFruGlu;			% g
+doseGlu = 60;			% g
+doseFru = 0 / fracFruGlu;			% g
 doseDuration = 30 / 60;	% hr
 doseSpacing = 8;		% hr
 
@@ -52,22 +52,17 @@ kEGcn = 2.29;			% / hr
 
 % ******************************
 % ** TODO: FIND ALL OF THESE. **
-deepFactor      = 0.2;       % TODO: Be more nuanced
 distFactor      = 3.0;
-redistFactor    = 0.5;
+redistFactor    = 1.0;
 
 kDSGlu = kAGlu;
 kRSGlu = kDSGlu * redistFactor;
-kDDGlu = kDSGlu * deepFactor;
-kRDGlu = kRSGlu * deepFactor;
 kDSIns = kEIns * distFactor;
 kRSIns = kDSIns * redistFactor;
-kDDIns = kDSIns * deepFactor;
-kRDIns = kRSIns * deepFactor;
 kDSGcn = kEGcn * distFactor;
 kRSGcn = kDSGcn * redistFactor;
-kDDGcn = kDSGcn * deepFactor;
-kRDGcn = kRSGcn * deepFactor;
+
+kEFFA = 1;
 % ******************************
 
 
@@ -75,6 +70,7 @@ kErGlu = kEGlu;
 kErFru = kEFru * (1 - fracFruGlu);
 kErIns = kEIns;
 kErGcn = kEGcn;
+kErFFA = kEFFA;
 
 kFruGlu = kEFru * fracFruGlu;
 
@@ -117,8 +113,8 @@ kFatGlu = kGlyGlu;
 
 %% Set-up simulation
 
-model.timeSpan  = [ 0 24 ];
-model.maxStep   = 0.25;
+model.timeSpan  = [ 0 7*24 ];
+model.maxStep   = doseDuration / 2;
 
 
 %% Compartments
@@ -153,6 +149,9 @@ model.compartments.bodyIns = x;
 x = pk_default_compartment( );
 x.volume = VdGcn; x.initialAmount = 0; x.displayName = 'Body GCN';
 model.compartments.bodyGcn = x;
+x = pk_default_compartment( );
+x.volume = VdGcn; x.initialAmount = 0; x.displayName = 'Body FFAs';
+model.compartments.bodyFFA = x;
 
 % Shallow compartment
 x = pk_default_compartment( );
@@ -164,6 +163,9 @@ model.compartments.closeIns = x;
 x = pk_default_compartment( );
 x.volume = VdGcn; x.initialAmount = 0; x.displayName = 'Close GCN';
 model.compartments.closeGcn = x;
+x = pk_default_compartment( );
+x.volume = VdGcn; x.initialAmount = 0; x.displayName = 'Close FFAs';
+model.compartments.closeFFA = x;
 
 % Deep compartment
 x = pk_default_compartment( );
@@ -175,6 +177,9 @@ model.compartments.deepIns = x;
 x = pk_default_compartment( );
 x.volume = VdGcn; x.initialAmount = 0; x.displayName = 'Deep GCN';
 model.compartments.deepGcn = x;
+x = pk_default_compartment( );
+x.volume = VdGcn; x.initialAmount = 0; x.displayName = 'Deep FFAs';
+model.compartments.deepFFA = x;
 
 % "Sequestered" regions
 x = pk_default_compartment( );
@@ -219,25 +224,62 @@ model.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'bodyGcn'; x.to = '';
 x.linker = pk_linear_linker( kErGcn );
 model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyFFA'; x.to = '';
+x.linker = pk_linear_linker( kErFFA );
+model.connections{ end + 1 } = x;
 
 % Distribution
+% GLU
 x = pk_default_connection( ); x.from = 'bodyGlu'; x.to = 'closeGlu';
 x.linker = pk_linear_linker( kDSGlu );
 model.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'closeGlu'; x.to = 'bodyGlu';
 x.linker = pk_linear_linker( kRSGlu );
 model.connections{ end + 1 } = x;
-x = pk_default_connection( ); x.from = 'bodyGlu'; x.to = 'closeGlu';
-x.linker = pk_linear_linker( kDSGlu );
+x = pk_default_connection( ); x.from = 'bodyGlu'; x.to = 'deepGlu';
+x.linker = pk_linear_linker( kDDGlu );
 model.connections{ end + 1 } = x;
-x = pk_default_connection( ); x.from = 'closeGlu'; x.to = 'bodyGlu';
-x.linker = pk_linear_linker( kRSGlu );
+x = pk_default_connection( ); x.from = 'deepGlu'; x.to = 'bodyGlu';
+x.linker = pk_linear_linker( kRDGlu );
 model.connections{ end + 1 } = x;
-x = pk_default_connection( ); x.from = 'bodyGlu'; x.to = 'closeGlu';
-x.linker = pk_linear_linker( kDSGlu );
+% INS
+x = pk_default_connection( ); x.from = 'bodyIns'; x.to = 'closeIns';
+x.linker = pk_linear_linker( kDSIns );
 model.connections{ end + 1 } = x;
-x = pk_default_connection( ); x.from = 'closeGlu'; x.to = 'bodyGlu';
-x.linker = pk_linear_linker( kRSGlu );
+x = pk_default_connection( ); x.from = 'closeIns'; x.to = 'bodyIns';
+x.linker = pk_linear_linker( kRSIns );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyIns'; x.to = 'deepIns';
+x.linker = pk_linear_linker( kDDIns );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'deepIns'; x.to = 'bodyIns';
+x.linker = pk_linear_linker( kRDIns );
+model.connections{ end + 1 } = x;
+% GCN
+x = pk_default_connection( ); x.from = 'bodyGcn'; x.to = 'closeGcn';
+x.linker = pk_linear_linker( kDSGcn );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'closeGcn'; x.to = 'bodyGcn';
+x.linker = pk_linear_linker( kRSGcn );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyGcn'; x.to = 'deepGcn';
+x.linker = pk_linear_linker( kDDGcn );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'deepGcn'; x.to = 'bodyGcn';
+x.linker = pk_linear_linker( kRDGcn );
+model.connections{ end + 1 } = x;
+% FFA
+x = pk_default_connection( ); x.from = 'bodyFFA'; x.to = 'closeFFA';
+x.linker = pk_linear_linker( kDSFFA );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'closeFFA'; x.to = 'bodyFFA';
+x.linker = pk_linear_linker( kRSFFA );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyFFA'; x.to = 'deepFFA';
+x.linker = pk_linear_linker( kDDFFA );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'deepFFA'; x.to = 'bodyFFA';
+x.linker = pk_linear_linker( kRDFFA );
 model.connections{ end + 1 } = x;
 
 % Conversion of FRU to GLU
@@ -259,7 +301,6 @@ x.depletes = [true false];
 x.to = {'tissueGly'};
 x.linker = pk_product_linker( kGluGly );
 model.interactions{ end + 1 } = x;
-
 % Tissue GLY -> Body Glu
 x = pk_default_interaction( );
 x.from = {'tissueGly', 'bodyGcn'};
@@ -277,7 +318,6 @@ x.depletes = [true false];
 x.to = {'viscFat'};
 x.linker = pk_product_linker( kGluFat );
 model.interactions{ end + 1 } = x;
-
 % Visc. Fat -> Body Glu
 x = pk_default_interaction( );
 x.from = {'viscFat', 'closeGcn'};
@@ -285,6 +325,22 @@ x.depletes = [true false];
 x.to = {'closeGlu'};
 x.linker = pk_product_linker( kFatGlu );
 model.interactions{ end + 1 } = x;
+
+% Body FFA -> Visc. Fat
+x = pk_default_interaction( );
+x.from = {'closeGlu', 'closeIns'};
+x.depletes = [true false];
+x.to = {'viscFat'};
+x.linker = pk_product_linker( kGluFat );
+model.interactions{ end + 1 } = x;
+% Visc. Fat -> Body Glu
+x = pk_default_interaction( );
+x.from = {'viscFat', 'closeGcn'};
+x.depletes = [true false];
+x.to = {'closeGlu'};
+x.linker = pk_product_linker( kFatGlu );
+model.interactions{ end + 1 } = x;
+
 
 % Deep
 
