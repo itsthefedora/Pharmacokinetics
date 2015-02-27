@@ -11,8 +11,8 @@
 
 absorptionFactor    = 1.0;  %0.25;
 
-insResistFactor     = 0.3;  %0.3;
-betaDecayFactor     = 1.0;  %1.2;
+insResistFactor     = 1.0;  %0.3;   % 0.5
+betaDecayFactor     = 1.0;  %1.2;   % 1.8
 
 desequestFactor     = 1.0;
 
@@ -346,8 +346,8 @@ x.flow = pk_constant_flow( qInsBase );
 model.inputs{ end + 1 } = x;
 
 x = pk_default_sdinput( );
-x.input = { 'bodyGlu' };
-x.target = 'bodyIns';
+x.input = { 'closeGlu' };
+x.target = 'closeIns';
 x.flow = pk_tanh_sd_flow( (qInsMax - qInsBase), betaShape, betaCenter );
 model.sdinputs{ end + 1 } = x;
 
@@ -357,8 +357,8 @@ x.flow = pk_constant_flow( qGcnBase );
 model.inputs{ end + 1 } = x;
 
 x = pk_default_sdinput( );
-x.input = { 'bodyGlu' };
-x.target = 'bodyGcn';
+x.input = { 'closeGlu' };
+x.target = 'closeGcn';
 x.flow = pk_tanh_sd_flow( (qGcnMax - qGcnBase), -alphaShape, alphaCenter );
 model.sdinputs{ end + 1 } = x;
 
