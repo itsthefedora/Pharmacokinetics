@@ -6,7 +6,7 @@
 % Fall 2014
 %=========================================================================%
 
-function [tResult, yResult] = pk_main(varargin)
+function [tResult, yResult, yNames] = pk_main(varargin)
 %PK_MAIN Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -55,13 +55,13 @@ f = @(t, y) pk_odefun( t, y, model );
 
 % Simulate!
 [ tResult, yResult ] = ode15s( f, model.timeSpan, model.initialState, model.odeOpts );
-
+yNames = model.compartmentDisplayNames;
 
 %% Plot result
 
 if doPlots
 
-    pk_plot( tResult, yResult );
+    pk_plot( tResult, yResult, model, false );
 
 end
 
