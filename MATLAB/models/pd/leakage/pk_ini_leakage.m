@@ -9,7 +9,7 @@
 
 %% Pathology
 
-absorptionFactor    = 0.25;  %0.25;
+absorptionFactor    = 1.0;  %0.25;
 
 insResistFactor     = 1.0;  %0.3;   % 0.5
 betaDecayFactor     = 1.0;  %1.2;   % 1.8
@@ -100,15 +100,10 @@ xFactor2    = 1 / eqGcnBase;
 kGluGly     = insResistFactor * xFactor1 * (8e-6 * molarMassGlu * waterMass) / (2e-3 * molarMassGlu * VdGlu) * 60;
 kGlyGlu     = desequestFactor * xFactor2 * (20e-6 * molarMassGlu * waterMass) / (250e-3 * molarMassGlu * VdGlu) * 60;
 
-% TODO: Find
-KmInsGluGly     = 0.5 * 2e-5;
-VmaxInsGluGly   = KmInsGluGly * kGluGly;
-
-betaCenter  = 9.5e-3 * molarMassGlu * VdGlu;
+betaCenter  = 8e-3 * molarMassGlu * VdGlu;
 alphaCenter = 3.5e-3 * molarMassGlu * VdGlu;
-% TODO: Find
-betaShape   = 0.45 * betaCenter;
-alphaShape  = 0.3 * alphaCenter;
+betaShape   = betaCenter;
+alphaShape  = alphaCenter;
 
 
 % ******************************
@@ -122,7 +117,7 @@ kFatGlu = kGlyGlu;
 
 %% Set-up simulation
 
-model.timeSpan  = [ 0 3*24 ];
+model.timeSpan  = [ 0 7*24 ];
 model.maxStep   = doseDuration / 2;
 
 
@@ -283,16 +278,7 @@ x = pk_default_interaction( );
 x.from = {'bodyGlu', 'bodyIns'};
 x.depletes = [true false];
 x.to = {'tissueGly'};
-% Select liver linker type
-if true
-    x.linker = pk_product_linker( kGluGly );
-else
-    params = struct;
-    params.isMM = [false true];
-    params.Vmax = [VmaxInsGluGly];
-    params.Km = [KmInsGluGly];
-    x.linker = pk_product_mm_linker( 1, params );
-end
+x.linker = pk_product_linker( kGluGly );
 model.interactions{ end + 1 } = x;
 
 % Tissue GLY -> Body Glu
@@ -360,8 +346,8 @@ x.flow = pk_constant_flow( qInsBase );
 model.inputs{ end + 1 } = x;
 
 x = pk_default_sdinput( );
-x.input = { 'bodyGlu' };
-x.target = 'bodyIns';
+x.input = { 'closeGlu' };
+x.target = 'closeIns';
 x.flow = pk_tanh_sd_flow( (qInsMax - qInsBase), betaShape, betaCenter );
 model.sdinputs{ end + 1 } = x;
 
@@ -371,8 +357,8 @@ x.flow = pk_constant_flow( qGcnBase );
 model.inputs{ end + 1 } = x;
 
 x = pk_default_sdinput( );
-x.input = { 'bodyGlu' };
-x.target = 'bodyGcn';
+x.input = { 'closeGlu' };
+x.target = 'closeGcn';
 x.flow = pk_tanh_sd_flow( (qGcnMax - qGcnBase), -alphaShape, alphaCenter );
 model.sdinputs{ end + 1 } = x;
 
