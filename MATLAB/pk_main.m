@@ -18,6 +18,8 @@ addpath( pwd( ) );
 
 % Parameter defaults
 doPlots = true;
+passStruct = {};
+iniFullPath = '';
 
 % Parse input arguments
 switch length(varargin)
@@ -27,6 +29,15 @@ switch length(varargin)
     
     case 1
         doPlots = varargin{1};
+    
+    case 2
+        doPlots = varargin{1};
+        iniFullPath = varargin{2};
+       
+    case 3
+        doPlots = varargin{1};
+        iniFullPath = varargin{2};
+        passStruct = varargin{3};
         
     otherwise
         error('Invalid number of arguments!');
@@ -39,9 +50,11 @@ end
 % Generate default model
 model = pk_default_model( );
 
-% Open and run INI file
-[ iniFN, iniPath ] = uigetfile( 'pk_ini_*.m' );
-iniFullPath = fullfile( iniPath, iniFN );
+if isempty(iniFullPath)
+    % Open and run INI file
+    [ iniFN, iniPath ] = uigetfile( 'pk_ini_*.m' );
+    iniFullPath = fullfile( iniPath, iniFN );
+end
 run( iniFullPath );
 
 % Compute model structure
