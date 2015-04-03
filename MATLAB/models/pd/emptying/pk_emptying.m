@@ -31,8 +31,10 @@ end
 %%
 
 figure('position', [100 100 1024 600]);
-plot(aFacts, 1 - ((1/doseGlu) * gluLoss), 'k', 'linewidth', 3);
+%%
+plot(aFacts, 1 - ((1/doseGlu) * gluLoss), 'k--', 'linewidth', 3);
 hold on;
+%%
 plot([1 1], [0 1], 'k--', 'linewidth', 2);
 set(gca, 'fontsize', 24);
 
