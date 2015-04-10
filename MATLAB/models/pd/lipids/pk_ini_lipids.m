@@ -26,6 +26,8 @@ molarMassGcn = 3485;
 
 %% Parameters
 
+Vgi     = 0.105;	% L
+
 patientMass 	= 70;		% kg
 waterFraction	= 0.65;		% [0 1]
 waterMass 		= waterFraction * patientMass;
@@ -38,7 +40,7 @@ fracFruGlu = 0.35;		% 0.27 - 0.37
 
 doseGlu 		= [60 50 40];				% g
 doseFru 		= [0 0 0] / fracFruGlu;		% g
-doseTG 			= [3 7 15];				% g
+doseTg 			= [3 7 15];				% g
 doseDuration 	= [15 30 30] / 60;			% hr
 doseOffsets 	= [6 12 18];				% hr
 dosesPerDay 	= length(doseOffsets);
@@ -100,11 +102,10 @@ kErGcn = kEGcn;
 
 kErVldl = kEVldl;
 kErFfa = kEFfa;
-kErLpl = kELpl
+kErLpl = kELpl;
 
 kFruGlu = kEFru * fracFruGlu;
 
-Vgi     = 0.105;	% L
 VdGlu   = 7.24;
 VdFru   = 7.24;
 VdIns   = 15.6;
@@ -125,6 +126,9 @@ eqInsMax    = 800e-12 * molarMassIns * VdIns;
 eqGcnMax    = 180e-12 * molarMassGcn * VdGcn;
 qInsMax     = betaDecayFactor * eqInsMax * kEIns;
 qGcnMax     = eqGcnMax * kEGcn;
+
+qLplBase = qInsBase;
+qLplMax = qInsMax;
 
 xFactor1    = 1 / eqInsBase;
 xFactor2    = 1 / eqGcnBase;
@@ -506,7 +510,7 @@ end
 x = pk_default_input( );
 x.target = 'bodyIns';
 x.flow = pk_constant_flow( qInsBase );
-model.inputs{ end + 1 } = x;
+model.inputs{ end + 1 } = x
 
 x = pk_default_sdinput( );
 x.input = { 'bodyGlu' };
@@ -533,6 +537,17 @@ model.inputs{ end + 1 } = x;
 x = pk_default_sdinput( );
 x.input = { 'closeIns' };
 x.target = 'closeLpl';
+x.flow = pk_tanh_sd_flow( (qLplMax - qLplBase), betaShape, betaCenter );
+model.sdinputs{ end + 1 } = x;
+
+x = pk_default_input( );
+x.target = 'deepLpl';
+x.flow = pk_constant_flow( qLplBase );
+model.inputs{ end + 1 } = x;
+
+x = pk_default_sdinput( );
+x.input = { 'deepIns' };
+x.target = 'deepLpl';
 x.flow = pk_tanh_sd_flow( (qLplMax - qLplBase), betaShape, betaCenter );
 model.sdinputs{ end + 1 } = x;
 
