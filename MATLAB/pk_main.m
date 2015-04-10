@@ -67,7 +67,7 @@ run( iniFullPath );
 f = @(t, y) pk_odefun( t, y, model );
 
 % Simulate!
-[ tResult, yResult ] = ode23s( f, model.timeSpan, model.initialState, model.odeOpts );
+[ tResult, yResult ] = ode15s( f, model.timeSpan, model.initialState, model.odeOpts );
 yNames = model.compartmentDisplayNames;
 
 %% Plot result

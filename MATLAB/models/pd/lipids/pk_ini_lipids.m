@@ -395,7 +395,7 @@ x.from = {'bodyFfa', 'bodyIns'};
 x.depletes = [true false];
 x.to = {'bodyVldl'};
 x.linker = pk_product_linker( kFfaVldl );
-model.interactions{ end + 1 } = x;
+%model.interactions{ end + 1 } = x;
 
 % Body GLU -> Tissue GLY
 x = pk_default_interaction( );
@@ -430,7 +430,7 @@ x.from = {'closeVldl', 'closeLpl'};
 x.depletes = [true false];
 x.to = {'closeFfa'};
 x.linker = pk_product_linker( kVldlFfa );
-model.interactions{ end + 1 } = x;
+%model.interactions{ end + 1 } = x;
 
 % Body GLU -> Visc. Fat
 x = pk_default_interaction( );
@@ -444,7 +444,7 @@ model.interactions{ end + 1 } = x;
 % TODO: linear?
 x = pk_default_connection( ); x.from = 'closeFfa'; x.to = 'viscFat';
 x.linker = pk_linear_linker( kFfaFat );
-model.connections{ end + 1 } = x;
+%model.connections{ end + 1 } = x;
 
 % Visc. Fat -> Shallow FFA
 x = pk_default_interaction( );
@@ -452,7 +452,7 @@ x.from = {'closeIns', 'viscFat'};
 x.depletes = [false true];
 x.to = {'closeFfa'};
 x.linker = pk_product_tanh_linker( kFatFfa, betaShape, betaCenter );
-model.interactions{ end + 1 } = x;
+%model.interactions{ end + 1 } = x;
 
 % Deep
 
@@ -484,7 +484,7 @@ x.from = {'deepIns', 'scFat'};
 x.depletes = [false true];
 x.to = {'deepFfa'};
 x.linker = pk_product_tanh_linker( kFatFfa, betaShape, betaCenter );
-model.interactions{ end + 1 } = x;
+%model.interactions{ end + 1 } = x;
 
 
 %% Inputs
