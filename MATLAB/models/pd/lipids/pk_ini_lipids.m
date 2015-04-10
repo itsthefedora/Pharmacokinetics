@@ -55,8 +55,12 @@ kEFru = kEGlu;			% TODO
 kEIns = 0.09 * 60;		% / hr
 kEGcn = 2.29;			% / hr
 
-kEVldl 	= 0;			% TODO
+% ******************************
+% ** TODO: FIND ALL OF THESE. **
+kEVldl 	= 0;
 kEFfa 	= kEGlu;
+kELpl 	= kEGcn;
+% ******************************
 
 
 % ******************************
@@ -77,6 +81,14 @@ kDSGcn = kEGcn * distFactor;
 kRSGcn = kDSGcn * redistFactor;
 kDDGcn = kDSGcn * deepFactor;
 kRDGcn = kRSGcn * deepFactor;
+kDSFfa = kEFfa * distFactor;
+kRSFfa = kDSFfa * redistFactor;
+kDDFfa = kDSFfa * deepFactor;
+kRDFfa = kRSFfa * deepFactor;
+kDSVldl = kEFfa * distFactor;
+kRSVldl = kDSVldl * redistFactor;
+kDDVldl = kDSVldl * deepFactor;
+kRDVldl = kRSVldl * deepFactor;
 % ******************************
 
 
@@ -88,6 +100,7 @@ kErGcn = kEGcn;
 
 kErVldl = kEVldl;
 kErFfa = kEFfa;
+kErLpl = kELpl
 
 kFruGlu = kEFru * fracFruGlu;
 
@@ -133,6 +146,12 @@ alphaShape  = 0.3 * alphaCenter;
 % ** TODO: FIND ALL OF THESE. **
 kGluFat = kGluGly;
 kFatGlu = kGlyGlu;
+
+kFfaVldl = 0.1;
+kVldlFfa = 0.1;
+
+kFfaFat = 0.1;
+kFatFfa = 0.1;
 % ******************************
 
 %=========================================================================%
@@ -199,6 +218,9 @@ model.compartments.closeIns = x;
 x = pk_default_compartment( );
 x.volume = VdGcn; x.initialAmount = 0; x.displayName = 'Close GCN';
 model.compartments.closeGcn = x;
+x = pk_default_compartment( );
+x.volume = VdGcn; x.initialAmount = 0; x.displayName = 'Close LPL';
+model.compartments.closeLpl = x;
 
 % Deep compartment
 x = pk_default_compartment( );
@@ -219,6 +241,9 @@ model.compartments.deepIns = x;
 x = pk_default_compartment( );
 x.volume = VdGcn; x.initialAmount = 0; x.displayName = 'Deep GCN';
 model.compartments.deepGcn = x;
+x = pk_default_compartment( );
+x.volume = VdGcn; x.initialAmount = 0; x.displayName = 'Deep LPL';
+model.compartments.deepLpl = x;
 
 % "Sequestered" regions
 x = pk_default_compartment( );
@@ -277,6 +302,9 @@ model.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'bodyGcn'; x.to = '';
 x.linker = pk_linear_linker( kErGcn );
 model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyLpl'; x.to = '';
+x.linker = pk_linear_linker( kErLpl );
+model.connections{ end + 1 } = x;
 
 % Distribution
 % GLU
@@ -318,6 +346,32 @@ model.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'deepGcn'; x.to = 'bodyGcn';
 x.linker = pk_linear_linker( kRDGcn );
 model.connections{ end + 1 } = x;
+% VLDL
+x = pk_default_connection( ); x.from = 'bodyVldl'; x.to = 'closeVldl';
+x.linker = pk_linear_linker( kDSVldl );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'closeVldl'; x.to = 'bodyVldl';
+x.linker = pk_linear_linker( kRSVldl );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyVldl'; x.to = 'deepVldl';
+x.linker = pk_linear_linker( kDDVldl );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'deepVldl'; x.to = 'bodyVldl';
+x.linker = pk_linear_linker( kRDVldl );
+model.connections{ end + 1 } = x;
+% FFA
+x = pk_default_connection( ); x.from = 'bodyFfa'; x.to = 'closeFfa';
+x.linker = pk_linear_linker( kDSFfa );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'closeFfa'; x.to = 'bodyFfa';
+x.linker = pk_linear_linker( kRSFfa );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyFfa'; x.to = 'deepFfa';
+x.linker = pk_linear_linker( kDDFfa );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'deepFfa'; x.to = 'bodyFfa';
+x.linker = pk_linear_linker( kRDFfa );
+model.connections{ end + 1 } = x;
 
 % Conversion of FRU to GLU
 x = pk_default_connection( );
@@ -330,6 +384,14 @@ model.connections{ end + 1 } = x;
 %% Interactions
 
 % Central
+
+% Body FFA -> Body VLDL
+x = pk_default_interaction( );
+x.from = {'bodyFfa', 'bodyIns'};
+x.depletes = [true false];
+x.to = {'bodyVldl'};
+x.linker = pk_product_linker( kFfaVldl );
+model.interactions{ end + 1 } = x;
 
 % Body GLU -> Tissue GLY
 x = pk_default_interaction( );
@@ -358,6 +420,14 @@ model.interactions{ end + 1 } = x;
 
 % Shallow
 
+% Shallow VLDL -> Shallow FFA
+x = pk_default_interaction( );
+x.from = {'closeVldl', 'closeLpl'};
+x.depletes = [true false];
+x.to = {'closeFfa'};
+x.linker = pk_product_linker( kVldlFfa );
+model.interactions{ end + 1 } = x;
+
 % Body GLU -> Visc. Fat
 x = pk_default_interaction( );
 x.from = {'closeGlu', 'closeIns'};
@@ -366,17 +436,31 @@ x.to = {'viscFat'};
 x.linker = pk_product_linker( kGluFat );
 model.interactions{ end + 1 } = x;
 
-% Visc. Fat -> Body Glu
+% Shallow FFA -> Visc. Fat
+% TODO: linear?
+x = pk_default_connection( ); x.from = 'closeFfa'; x.to = 'viscFat';
+x.linker = pk_linear_linker( kFfaFat );
+model.connections{ end + 1 } = x;
+
+% Visc. Fat -> Shallow FFA
 x = pk_default_interaction( );
-x.from = {'viscFat', 'closeGcn'};
-x.depletes = [true false];
-x.to = {'closeGlu'};
-x.linker = pk_product_linker( kFatGlu );
+x.from = {'closeIns', 'viscFat'};
+x.depletes = [false true];
+x.to = {'closeFfa'};
+x.linker = pk_product_tanh_linker( kFatFfa, betaShape, betaCenter );
 model.interactions{ end + 1 } = x;
 
 % Deep
 
-% Body GLU -> Visc. Fat
+% Deep VLDL -> Deep FFA
+x = pk_default_interaction( );
+x.from = {'deepVldl', 'deepLpl'};
+x.depletes = [true false];
+x.to = {'deepFfa'};
+x.linker = pk_product_linker( kVldlFfa );
+model.interactions{ end + 1 } = x;
+
+% Body GLU -> SC. Fat
 x = pk_default_interaction( );
 x.from = {'deepGlu', 'deepIns'};
 x.depletes = [true false];
@@ -384,12 +468,18 @@ x.to = {'scFat'};
 x.linker = pk_product_linker( kGluFat );
 model.interactions{ end + 1 } = x;
 
-% Visc. Fat -> Body Glu
+% Deep FFA -> SC. Fat
+% TODO: linear?
+x = pk_default_connection( ); x.from = 'deepFfa'; x.to = 'scFat';
+x.linker = pk_linear_linker( kFfaFat );
+model.connections{ end + 1 } = x;
+
+% SC. Fat -> Deep FFA
 x = pk_default_interaction( );
-x.from = {'scFat', 'deepGcn'};
-x.depletes = [true false];
-x.to = {'deepGlu'};
-x.linker = pk_product_linker( kFatGlu );
+x.from = {'deepIns', 'scFat'};
+x.depletes = [false true];
+x.to = {'deepFfa'};
+x.linker = pk_product_tanh_linker( kFatFfa, betaShape, betaCenter );
 model.interactions{ end + 1 } = x;
 
 
@@ -433,6 +523,17 @@ x = pk_default_sdinput( );
 x.input = { 'bodyGlu' };
 x.target = 'bodyGcn';
 x.flow = pk_tanh_sd_flow( (qGcnMax - qGcnBase), -alphaShape, alphaCenter );
+model.sdinputs{ end + 1 } = x;
+
+x = pk_default_input( );
+x.target = 'closeLpl';
+x.flow = pk_constant_flow( qLplBase );
+model.inputs{ end + 1 } = x;
+
+x = pk_default_sdinput( );
+x.input = { 'closeIns' };
+x.target = 'closeLpl';
+x.flow = pk_tanh_sd_flow( (qLplMax - qLplBase), betaShape, betaCenter );
 model.sdinputs{ end + 1 } = x;
 
 
