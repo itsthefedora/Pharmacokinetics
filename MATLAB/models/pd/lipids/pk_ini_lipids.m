@@ -48,12 +48,15 @@ KmSITgFfa 		= 100 * Vgi;		% g
 
 kAGlu = absorptionFactor * 0.205 * 60;		% / hr
 kAFru = kAGlu;			% TODO
-kATg = 1;				% TODO
+kAFfa = kAGlu;			% TODO
 
 kEGlu = 0.0141 * 60;	% / hr
 kEFru = kEGlu;			% TODO
 kEIns = 0.09 * 60;		% / hr
 kEGcn = 2.29;			% / hr
+
+kEVldl 	= 0;			% TODO
+kEFfa 	= kEGlu;
 
 
 % ******************************
@@ -77,10 +80,14 @@ kRDGcn = kRSGcn * deepFactor;
 % ******************************
 
 
+% TODO
 kErGlu = kEGlu;
 kErFru = kEFru * (1 - fracFruGlu);
 kErIns = kEIns;
 kErGcn = kEGcn;
+
+kErVldl = kEVldl;
+kErFfa = kEFfa;
 
 kFruGlu = kEFru * fracFruGlu;
 
@@ -223,7 +230,7 @@ model.compartments.tissueGly = x;
 x = pk_default_compartment( );
 x.volume = VtGly;
 x.initialAmount = glycogenMass;
-x.displayName = 'Visc. Fat';
+x.displayName = 'V Fat';
 model.compartments.viscFat = x;
 
 x = pk_default_compartment( );
@@ -236,8 +243,8 @@ model.compartments.scFat = x;
 %% Connections
 
 % Bile action
-x = pk_default_connection( ); x.from = 'giGlu'; x.to = 'bodyGlu';
-x.linker = pk_linear_linker( kAGlu );
+x = pk_default_connection( ); x.from = 'giTg'; x.to = 'giFfa';
+x.linker = pk_mm_linker( KmSITgFfa, VmaxSITgFfa );
 model.connections{ end + 1 } = x;
 
 % Absorption
@@ -247,8 +254,8 @@ model.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'giFru'; x.to = 'bodyFru';
 x.linker = pk_linear_linker( kAFru );
 model.connections{ end + 1 } = x;
-x = pk_default_connection( ); x.from = 'giTg'; x.to = 'bodyVldl';
-x.linker = pk_linear_linker( kATg );
+x = pk_default_connection( ); x.from = 'giFfa'; x.to = 'bodyFfa';
+x.linker = pk_linear_linker( kAFfa );
 model.connections{ end + 1 } = x;
 
 % Renal clearance
@@ -257,6 +264,12 @@ x.linker = pk_linear_linker( kErGlu );
 model.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'bodyFru'; x.to = '';
 x.linker = pk_linear_linker( kErFru );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyVldl'; x.to = '';
+x.linker = pk_linear_linker( kErVldl );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyFfa'; x.to = '';
+x.linker = pk_linear_linker( kErFfa );
 model.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'bodyIns'; x.to = '';
 x.linker = pk_linear_linker( kErIns );
