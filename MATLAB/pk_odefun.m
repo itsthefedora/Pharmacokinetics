@@ -10,15 +10,17 @@ function [yDot] = pk_odefun(t, y, model)
 %PK_ODEFUN Summary of this function goes here
 %   Detailed explanation goes here
 
-yDot = zeros( length(t), length( y ) );
+%disp(t);
+
+yDot = zeros( length( y ), 1 );
 
 for i = 1:length( y )
 
 	% Inter-compartment connections
 
 	for j = 1:length( model.fromLinkers{ i } )
-        disp(model.fromLinkers{i}{j})
-        disp(size(y))
+        % disp(model.fromLinkers{i}{j})
+        % disp(size(y))
         yDot( i ) = yDot( i ) - model.fromLinkers{ i }{ j }( y( i ), t );
 	end
 

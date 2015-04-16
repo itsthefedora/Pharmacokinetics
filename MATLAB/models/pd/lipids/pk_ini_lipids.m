@@ -36,11 +36,17 @@ liverMass = 1.5e3;		% g
 glycogenPerMass = 65e-3; % g / g
 glycogenMass = glycogenPerMass * liverMass * 10; % g
 
+% ******************************
+% ** TODO: FIND ALL OF THESE. **
+vFatMass = 3 * glycogenMass;
+scFatMass = 2 * glycogenMass;
+% ******************************
+
 fracFruGlu = 0.35;		% 0.27 - 0.37
 
-doseGlu 		= [60 50 40];				% g
-doseFru 		= [0 0 0] / fracFruGlu;		% g
-doseTg 			= [3 7 15];				% g
+doseGlu 		= 2 * [60 50 40];				% g
+doseFru 		= 1 * [60 50 40] / fracFruGlu;		% g
+doseTg 			= 1 * [3 7 15];					% g
 doseDuration 	= [15 30 30] / 60;			% hr
 doseOffsets 	= [6 12 18];				% hr
 dosesPerDay 	= length(doseOffsets);
@@ -163,8 +169,8 @@ kFatFfa = 0.1;
 
 %% Set-up simulation
 
-model.timeSpan  = [ 0 3*24 ];
-model.maxStep   = doseDuration / 2;
+model.timeSpan  = [ 0 7*24 ];
+model.maxStep   = min( doseDuration ) / 2;
 
 
 %% Compartments
@@ -258,13 +264,13 @@ model.compartments.tissueGly = x;
 
 x = pk_default_compartment( );
 x.volume = VtGly;
-x.initialAmount = glycogenMass;
+x.initialAmount = vFatMass;
 x.displayName = 'V Fat';
 model.compartments.viscFat = x;
 
 x = pk_default_compartment( );
 x.volume = VtGly;
-x.initialAmount = glycogenMass;
+x.initialAmount = scFatMass;
 x.displayName = 'SC Fat';
 model.compartments.scFat = x;
 
@@ -395,7 +401,7 @@ x.from = {'bodyFfa', 'bodyIns'};
 x.depletes = [true false];
 x.to = {'bodyVldl'};
 x.linker = pk_product_linker( kFfaVldl );
-%model.interactions{ end + 1 } = x;
+model.interactions{ end + 1 } = x;
 
 % Body GLU -> Tissue GLY
 x = pk_default_interaction( );
@@ -430,7 +436,7 @@ x.from = {'closeVldl', 'closeLpl'};
 x.depletes = [true false];
 x.to = {'closeFfa'};
 x.linker = pk_product_linker( kVldlFfa );
-%model.interactions{ end + 1 } = x;
+model.interactions{ end + 1 } = x;
 
 % Body GLU -> Visc. Fat
 x = pk_default_interaction( );
@@ -444,7 +450,7 @@ model.interactions{ end + 1 } = x;
 % TODO: linear?
 x = pk_default_connection( ); x.from = 'closeFfa'; x.to = 'viscFat';
 x.linker = pk_linear_linker( kFfaFat );
-%model.connections{ end + 1 } = x;
+model.connections{ end + 1 } = x;
 
 % Visc. Fat -> Shallow FFA
 x = pk_default_interaction( );
@@ -452,7 +458,7 @@ x.from = {'closeIns', 'viscFat'};
 x.depletes = [false true];
 x.to = {'closeFfa'};
 x.linker = pk_product_tanh_linker( kFatFfa, betaShape, betaCenter );
-%model.interactions{ end + 1 } = x;
+model.interactions{ end + 1 } = x;
 
 % Deep
 
@@ -484,7 +490,7 @@ x.from = {'deepIns', 'scFat'};
 x.depletes = [false true];
 x.to = {'deepFfa'};
 x.linker = pk_product_tanh_linker( kFatFfa, betaShape, betaCenter );
-%model.interactions{ end + 1 } = x;
+model.interactions{ end + 1 } = x;
 
 
 %% Inputs
@@ -510,7 +516,7 @@ end
 x = pk_default_input( );
 x.target = 'bodyIns';
 x.flow = pk_constant_flow( qInsBase );
-model.inputs{ end + 1 } = x
+model.inputs{ end + 1 } = x;
 
 x = pk_default_sdinput( );
 x.input = { 'bodyGlu' };
@@ -550,6 +556,9 @@ x.input = { 'deepIns' };
 x.target = 'deepLpl';
 x.flow = pk_tanh_sd_flow( (qLplMax - qLplBase), betaShape, betaCenter );
 model.sdinputs{ end + 1 } = x;
+
+
+
 
 
 

@@ -33,7 +33,7 @@ model.sdFlows 					= { };
 
 %% Generate ODE solver options
 
-model.odeOpts = odeset( 'MaxStep', model.maxStep, 'Vectorize', false );
+model.odeOpts = odeset( 'MaxStep', model.maxStep );
 
 %% Compute initial state
 
