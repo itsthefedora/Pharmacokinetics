@@ -9,7 +9,7 @@
 
 %% Pathology
 
-absorptionFactor    = 1;  %0.25;
+absorptionFactor    = 4;  %0.25;
 
 insResistFactor     = 1.0;  %0.3;   % 0.5
 betaDecayFactor     = 1.0;  %1.2;   % 1.8
@@ -32,6 +32,14 @@ patientMass 	= 70;		% kg
 waterFraction	= 0.65;		% [0 1]
 waterMass 		= waterFraction * patientMass;
 
+fatFraction = 0.3;
+fatMass = fatFraction * patientMass;
+vFatFraction = 0.15;
+scFatFraction = 0.3;
+vFatMass = vFatFraction * fatMass * 1000;	% g
+scFatMass = scFatFraction * fatMass * 1000;	% g
+
+
 liverMass = 1.5e3;		% g
 glycogenPerMass = 65e-3; % g / g
 glycogenMass = glycogenPerMass * liverMass * 10; % g
@@ -44,10 +52,12 @@ scFatMass = 2 * glycogenMass;
 
 fracFruGlu = 0.35;		% 0.27 - 0.37
 
-doseGlu 		= 4 * [50 30 40];				% g
-doseFru 		= 5 * [30 20 50] / fracFruGlu;		% g
-doseTg 			= 2 * [5 8 15];					% g
-doseDuration 	= [15 30 30] / 60;			% hr
+dietScale		= 2;
+
+doseGlu 		= dietScale * [35 30 40];				% g
+doseFru 		= dietScale * 1.2 * [50 30 40] / fracFruGlu;		% g
+doseTg 			= dietScale * [10 16 30];					% g
+doseDuration 	= [15 30 45] / 60;			% hr
 doseOffsets 	= [6 12 18];				% hr
 dosesPerDay 	= length(doseOffsets);
 
@@ -567,7 +577,7 @@ model.inputs{ end + 1 } = x;
 x = pk_default_sdinput( );
 x.input = { 'closeIns' };
 x.target = 'closeLpl';
-x.flow = pk_tanh_sd_flow( (qLplMax - qLplBase), betaShape, lplCenter );
+x.flow = pk_tanh_sd_flow( (qLplMax - qLplBase), lplShape, lplCenter );
 model.sdinputs{ end + 1 } = x;
 
 x = pk_default_input( );
