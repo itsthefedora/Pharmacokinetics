@@ -25,8 +25,9 @@ for i = 1:length( y )
 	end
 
 	for j = 1:length( model.toLinkers{ i } )
-		yDot( i ) = yDot( i ) + model.toLinkers{ i }{ j }( ...
+        yDotNew = yDot( i ) + model.toLinkers{ i }{ j }( ...
 			y( model.toLinkerSources{ i }{ j } ), t );
+		yDot( i ) = yDotNew;
 	end
 
 	% Flow inputs

@@ -97,6 +97,10 @@ kDSVldl = kEFfa * distFactor;
 kRSVldl = kDSVldl * redistFactor;
 kDDVldl = kDSVldl * deepFactor;
 kRDVldl = kRSVldl * deepFactor;
+kDSLpl = kEFfa * distFactor;
+kRSLpl = kDSLpl * redistFactor;
+kDDLpl = kDSLpl * deepFactor;
+kRDLpl = kRSLpl * deepFactor;
 % ******************************
 
 
@@ -133,8 +137,8 @@ eqGcnMax    = 180e-12 * molarMassGcn * VdGcn;
 qInsMax     = betaDecayFactor * eqInsMax * kEIns;
 qGcnMax     = eqGcnMax * kEGcn;
 
-qLplBase = qInsBase;
-qLplMax = qInsMax;
+qLplBase = qInsBase * 1e5;
+qLplMax = qInsMax * 1e5;
 
 xFactor1    = 1 / eqInsBase;
 xFactor2    = 1 / eqGcnBase;
@@ -147,9 +151,13 @@ VmaxInsGluGly   = KmInsGluGly * kGluGly;
 
 betaCenter  = 9.5e-3 * molarMassGlu * VdGlu;
 alphaCenter = 3.5e-3 * molarMassGlu * VdGlu;
+
 % TODO: Find
 betaShape   = 0.45 * betaCenter;
 alphaShape  = 0.3 * alphaCenter;
+
+lplCenter = 1.5e-5;
+lplShape = 0.45 * lplCenter;
 
 
 % ******************************
@@ -169,7 +177,7 @@ kFatFfa = 0.1;
 
 %% Set-up simulation
 
-model.timeSpan  = [ 0 7*24 ];
+model.timeSpan  = [ 0 30*24 ];
 model.maxStep   = min( doseDuration ) / 2;
 
 
@@ -208,6 +216,9 @@ model.compartments.bodyIns = x;
 x = pk_default_compartment( );
 x.volume = VdGcn; x.initialAmount = 0; x.displayName = 'Body GCN';
 model.compartments.bodyGcn = x;
+x = pk_default_compartment( );
+x.volume = VdGcn; x.initialAmount = 0; x.displayName = 'Body LPL';
+model.compartments.bodyLpl = x;
 
 % Shallow compartment
 x = pk_default_compartment( );
@@ -382,6 +393,19 @@ model.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'deepFfa'; x.to = 'bodyFfa';
 x.linker = pk_linear_linker( kRDFfa );
 model.connections{ end + 1 } = x;
+% LPL
+x = pk_default_connection( ); x.from = 'bodyLpl'; x.to = 'closeLpl';
+x.linker = pk_linear_linker( kDSLpl );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'closeLpl'; x.to = 'bodyLpl';
+x.linker = pk_linear_linker( kRSLpl );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyLpl'; x.to = 'deepLpl';
+x.linker = pk_linear_linker( kDDLpl );
+model.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'deepLpl'; x.to = 'bodyLpl';
+x.linker = pk_linear_linker( kRDLpl );
+model.connections{ end + 1 } = x;
 
 % Conversion of FRU to GLU
 x = pk_default_connection( );
@@ -543,7 +567,7 @@ model.inputs{ end + 1 } = x;
 x = pk_default_sdinput( );
 x.input = { 'closeIns' };
 x.target = 'closeLpl';
-x.flow = pk_tanh_sd_flow( (qLplMax - qLplBase), betaShape, betaCenter );
+x.flow = pk_tanh_sd_flow( (qLplMax - qLplBase), betaShape, lplCenter );
 model.sdinputs{ end + 1 } = x;
 
 x = pk_default_input( );
@@ -554,9 +578,8 @@ model.inputs{ end + 1 } = x;
 x = pk_default_sdinput( );
 x.input = { 'deepIns' };
 x.target = 'deepLpl';
-x.flow = pk_tanh_sd_flow( (qLplMax - qLplBase), betaShape, betaCenter );
+x.flow = pk_tanh_sd_flow( (qLplMax - qLplBase), lplShape, lplCenter );
 model.sdinputs{ end + 1 } = x;
-
 
 
 
