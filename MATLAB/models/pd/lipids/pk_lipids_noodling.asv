@@ -5,8 +5,8 @@ scaleFactorGlu = 100 / 7.24;
 plotIdxIns = [9 16 23];
 plotIdxSink = [26 27 28];
 
-plotIdx = plotIdxLPL;
-scaleFactor = 1;
+plotIdx = plotIdxGlu;
+scaleFactor = scaleFactorGlu;
 
 figure;
 plot( t, scaleFactor * y(:, plotIdx), 'linewidth', 2 );

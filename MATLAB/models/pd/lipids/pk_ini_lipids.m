@@ -9,10 +9,10 @@
 
 %% Pathology
 
-absorptionFactor    = 0.25;  %0.25;
+absorptionFactor    = 1;  %0.25;
 
-insResistFactor     = 1.0;  %0.3;   % 0.5
-betaDecayFactor     = 1.0;  %1.2;   % 1.8
+insResistFactor     = 0.3;  %0.3;   % 0.5
+betaDecayFactor     = 1.2;  %1.2;   % 1.8
 
 desequestFactor     = 1.0;
 
@@ -44,9 +44,9 @@ scFatMass = 2 * glycogenMass;
 
 fracFruGlu = 0.35;		% 0.27 - 0.37
 
-doseGlu 		= 2 * [60 50 40];				% g
-doseFru 		= 1 * [60 50 40] / fracFruGlu;		% g
-doseTg 			= 1 * [3 7 15];					% g
+doseGlu 		= 4 * [50 30 40];				% g
+doseFru 		= 5 * [30 20 50] / fracFruGlu;		% g
+doseTg 			= 2 * [5 8 15];					% g
 doseDuration 	= [15 30 30] / 60;			% hr
 doseOffsets 	= [6 12 18];				% hr
 dosesPerDay 	= length(doseOffsets);
@@ -177,7 +177,7 @@ kFatFfa = 0.1;
 
 %% Set-up simulation
 
-model.timeSpan  = [ 0 30*24 ];
+model.timeSpan  = [ 0 7*24 ];
 model.maxStep   = min( doseDuration ) / 2;
 
 
