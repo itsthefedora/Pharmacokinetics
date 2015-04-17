@@ -11,8 +11,8 @@
 
 absorptionFactor    = 1;  %0.25;
 
-insResistFactor     = 0.3;  %0.3;   % 0.5
-betaDecayFactor     = 1.2;  %1.2;   % 1.8
+insResistFactor     = 1.0;  %0.3;   % 0.5
+betaDecayFactor     = 1.0;  %1.2;   % 1.8
 
 desequestFactor     = 1.0;
 
