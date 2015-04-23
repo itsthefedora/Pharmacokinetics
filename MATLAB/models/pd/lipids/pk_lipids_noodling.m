@@ -15,10 +15,10 @@ scaleFactor2 = 1;
 
 %%
 
-figure('position', [100 100 1024 800]);
+figure('position', [100 100 1024 600]);
 plot( t, scaleFactor2 * y(:, plotIdx2), 'linewidth', 2 );
 set(gca, 'fontsize', 24);
-legend( n(plotIdx2), 'fontsize', 16 );
+legend( n(plotIdx2), 'fontsize', 16, 'location', 'nw' );
 set(gca, 'xlim', [min(t), max(t)]);
 
 %%
