@@ -121,6 +121,16 @@ x = pk_default_connection( ); x.from = 'glut4vf'; x.to = '';
 x.linker = pk_linear_linker( kEGlut4 );
 model.slow.connections{ end + 1 } = x;
 
+x = pk_default_connection( ); x.from = 'betaQmax'; x.to = '';
+x.linker = pk_linear_linker( kEBetaQmax );
+model.slow.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'betaN'; x.to = '';
+x.linker = pk_linear_linker( kEBetaN );
+model.slow.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'betaX'; x.to = '';
+x.linker = pk_linear_linker( kEBetaX );
+model.slow.connections{ end + 1 } = x;
+
 %% -- Inputs
 
 % Accumulation
