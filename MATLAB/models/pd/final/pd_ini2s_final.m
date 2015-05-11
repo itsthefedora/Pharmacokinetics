@@ -393,6 +393,16 @@ x.to = { '' }; % TODO
 x.linker = pk_product_linker( kEmGluMuscleActive );
 model.interactions{ end + 1 } = x;
 
+x = pk_default_connection( ); x.from = 'liverATP'; x.to = '';
+x.linker = pk_linear_linker( kEATP );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'liverAMP'; x.to = '';
+x.linker = pk_linear_linker( kEAMP );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'liverUric'; x.to = '';
+x.linker = pk_linear_linker( kEUric );
+model.fast.connections{ end + 1 } = x;
+
 % Fructolysis
 x = pk_default_interaction( );
 x.from = { 'liverFru', 'liverATP' }; x.depletes = [true, true];
@@ -434,13 +444,13 @@ for i = 1:dosesPerDay
 
 	x = pk_default_input( ); x.target = 'giGlu';
 	x.flow = pk_pulsed_flow( doseGlu(i), doseDuration(i), 24, -1, doseOffset(i) );
-	model.inputs{ end + 1 } = x;
+	model.fast.inputs{ end + 1 } = x;
 	x = pk_default_input( ); x.target = 'giFru';
 	x.flow = pk_pulsed_flow( doseFru(i), doseDuration(i), 24, -1, doseOffset(i) );
-	model.inputs{ end + 1 } = x;
+	model.fast.inputs{ end + 1 } = x;
 	x = pk_default_input( ); x.target = 'giTg';
 	x.flow = pk_pulsed_flow( doseTg(i), doseDuration(i), 24, -1, doseOffset(i) );
-	model.inputs{ end + 1 } = x;
+	model.fast.inputs{ end + 1 } = x;
 
 end
 
@@ -450,21 +460,26 @@ x.flow = pk_constant_flow( QInsBase );
 model.fast.inputs{ end + 1 } = x;
 x = pk_default_sdinput( ); x.input = { 'bodyGlu' }; x.target = 'bodyIns';
 x.flow = pk_tanh_sd_flow( QGluInsMax, QGluInsShape, QGluInsCenter );
-model.slow.sdinputs{ end + 1 } = x;
+model.fast.sdinputs{ end + 1 } = x;
 
 x = pk_default_input( ); x.target = 'bodyGcn';
 x.flow = pk_constant_flow( QInsBase );
 model.fast.inputs{ end + 1 } = x;
 x = pk_default_sdinput( ); x.input = { 'bodyGlu' }; x.target = 'bodyGcn';
 x.flow = pk_tanh_sd_flow( QGluGcnMax, QGluGcnShape, QGluGcnCenter );
-model.slow.sdinputs{ end + 1 } = x;
+model.fast.sdinputs{ end + 1 } = x;
 
 x = pk_default_input( ); x.target = 'bodyLpl';
 x.flow = pk_constant_flow( QLplBase );
 model.fast.inputs{ end + 1 } = x;
 x = pk_default_sdinput( ); x.input = { 'bodyIns' }; x.target = 'bodyLpl';
 x.flow = pk_tanh_sd_flow( QInsLplMax, QInsLplShape, QInsLplCenter );
-model.slow.sdinputs{ end + 1 } = x;
+model.fast.sdinputs{ end + 1 } = x;
+
+x = pk_default_input( ); x.target = 'liverUric';
+x.flow = pk_constant_flow( QUricBase );
+model.fast.inputs{ end + 1 } = x;
+
 
 
 
