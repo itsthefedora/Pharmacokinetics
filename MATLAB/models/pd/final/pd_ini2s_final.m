@@ -27,7 +27,7 @@ QVFGlut4Max 		= 1.0;		% TODO
 QVFGlut4Shape 		= 1.0;		% TODO
 QVFGlut4Center		= 1.0;		% TODO
 
-% Beta stuff
+% Beta
 BetaFakeVolume 		= 1.0;		% TODO?
 BetaQmaxDefault 	= 1.0;		% TODO
 BetaNDefault 		= 1.0;		% TODO
@@ -134,7 +134,10 @@ model.slow.connections{ end + 1 } = x;
 %% -- Inputs
 
 % Accumulation
-% ... %
+x = pk_default_input( ); x.target = 'fatV';
+x.flow = pk_constant_flow( QFatVBase );
+model.slow.inputs{ end + 1 } = x;
+model.globals.idx_inputFatV = length( model.slow.inputs );	% TODO
 
 % Baseline TF production
 x = pk_default_input( ); x.target = 'glut4liver';
