@@ -193,10 +193,8 @@ kTgUptakeSCAdip		= 1.0;	% TODO
 % Lipid packaging
 kLiverFATg			= 1.0;	% TODO
 
-% ...
-
-
 % Sequestration
+
 kLiverGluGly		= 1.0;	% TODO
 kLiverGlyGlu		= 1.0;	% TODO
 kLiverFAEF			= 1.0;	% TODO
@@ -238,6 +236,29 @@ SCInsSatPoint		= 1.0;		% TODO	% g
 SCStoreFACenter 	= 0.5;		% TODO
 SCStoreFAShape 		= (SCInsSatPoint - SCStoreFACenter) / atanh( 2*SCFAT - 1 );
 
+% Distribution
+% Glu
+kDGluBodyLiver		= 1.0;	% TODO	% / h
+kDGluLiverBody		= 1.0;	% TODO
+kDGluBodyMuscle		= 1.0;	% TODO
+kDGluMuscleBody		= 1.0;	% TODO
+kDGluBodyVAdip		= 1.0;	% TODO
+kDGluVAdipBody		= 1.0;	% TODO
+kDGluBodySCAdip		= 1.0;	% TODO
+kDGluSCAdipBody		= 1.0;	% TODO
+
+% FAs
+kDFABodyLiver		= 1.0;	% TODO	% / h
+kDFALiverBody		= 1.0;	% TODO
+kDFABodyMuscle		= 1.0;	% TODO
+kDFAMuscleBody		= 1.0;	% TODO
+kDFABodyVAdip		= 1.0;	% TODO
+kDFAVAdipBody		= 1.0;	% TODO
+kDFABodySCAdip		= 1.0;	% TODO
+kDFASCAdipBody		= 1.0;	% TODO
+
+% Inputs
+
 % Beta cell action
 QInsBase 			= 1.0;		% TODO
 QGluInsMax 			= 1.0;		% TODO
@@ -249,6 +270,18 @@ QGcnBase 			= 1.0;		% TODO
 QGluGcnMax 			= 1.0;		% TODO
 QGluGcnShape 		= 1.0;		% TODO
 QGluGcnCenter		= 1.0;		% TODO
+
+% Lipase production
+QLplBase 			= 1.0;		% TODO
+QInsLplMax 			= 1.0;		% TODO
+QInsLplShape 		= 1.0;		% TODO
+QInsLplCenter		= 1.0;		% TODO
+
+% Uric acid production
+QUricBase 			= 1.0;		% TODO
+QAMPUricMax 		= 1.0;		% TODO
+QAMPUricShape 		= 1.0;		% TODO
+QAMPUricCenter		= 1.0;		% TODO
 
 %=========================================================================%
 %% GLOBAL
