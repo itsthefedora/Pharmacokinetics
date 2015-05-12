@@ -91,9 +91,10 @@ GIVolume 			= 1.0;		% TODO
 % Absorption
 GlukA				= 1.0;		% TODO
 FrukA 				= 1.0;		% TODO
+FATgkA				= 1.0;		% TODO
 % Bile action
-SITgFfaKm 			= 1.0;		% TODO
-SITgFfaVmax			= 1.0;		% TODO
+SITgFAKm 			= 1.0;		% TODO
+SITgFAVmax			= 1.0;		% TODO
 
 % Central
 
@@ -119,8 +120,27 @@ BodyLplDefault		= 1.0;		% TODO
 % Tissue
 
 % Volumes
-LiverGlyVolume 		= 1.0;		% TODO?
-MuscleGlyVolume 	= 1.0;		% TODO?
+LiverGluVolume 		= 1.0;		% OK?
+LiverFruVolume 		= 1.0;		% OK?
+LiverFAVolume 		= 1.0;		% OK?
+LiverGlyVolume		= 1.0;		% OK?
+LiverEFVolume 		= 1.0;		% OK?
+LiverATPVolume 		= 1.0;		% OK?
+LiverAMPVolume 		= 1.0;		% OK?
+LiverUricVolume 	= 1.0;		% OK?
+
+MudcleGluVolume 	= 1.0;		% OK?
+MudcleFAVolume 		= 1.0;		% OK?
+MuscleGlyVolume		= 1.0;		% OK?
+MuscleEFVolume 		= 1.0;		% OK?
+
+VAdipGluVolume 		= 1.0;		% OK?
+VAdipFAVolume 		= 1.0;		% OK?
+VAdipStorageVolume 	= 1.0;		% OK?
+
+SCAdipGluVolume 	= 1.0;		% OK?
+SCAdipFAVolume 		= 1.0;		% OK?
+SCAdipStorageVolume	= 1.0;		% OK?
 
 % Defaults
 LiverGluDefault 	= 1.0;		% TODO
@@ -132,19 +152,91 @@ LiverATPDefault 	= 1.0;		% TODO
 LiverAMPDefault 	= 1.0;		% TODO
 LiverUricDefault 	= 1.0;		% TODO
 
+MudcleGluDefault 	= 1.0;		% TODO
+MudcleFADefault 	= 1.0;		% TODO
 MuscleGlyDefault	= 1.0;		% TODO
 MuscleEFDefault 	= 1.0;		% TODO
 
-% Sequestration
-LiverGlyT 				= 0.025;	% [0 1]
-LiverGlyCapacity 		= 1000.0;	% g
-LiverGluGlyCenter		= 800.0;
-LiverGluGlyShape		= (LiverGlyCapacity - LiverGluGlyCenter) / atanh( 2*LiverGlyT - 1 );
+VAdipGluDefault 	= 1.0;		% TODO
+VAdipFADefault 		= 1.0;		% TODO
+VAdipStorageDefault = 1.0;		% TODO
 
-MuscleGlyT 				= 0.025;	% [0 1]
-MuscleGlyCapacity 		= 1000.0;	% g
-MuscleGluGlyCenter		= 800.0;
-MuscleGluGlyShape		= (MuscleGlyCapacity - MuscleGluGlyCenter) / atanh( 2*MuscleGlyT - 1 );
+SCAdipGluDefault 		= 1.0;		% TODO
+SCAdipFADefault 		= 1.0;		% TODO
+SCAdipStorageDefault	= 1.0;		% TODO
+
+% Clearance - Renal
+kErGlu 		= 1.0;	% TODO	% / h
+kErFru 		= 1.0;	% TODO
+kErIns 		= 1.0;	% TODO
+kErGcn 		= 1.0;	% TODO
+
+% Clearance - Metabolism
+kEmGluLiverBase			= 1.0;	% TODO	% / h
+kEmGluLiverActive		= 1.0;	% TODO
+kEmGluMuscleBase		= 1.0;	% TODO
+kEmGluMuscleActive		= 1.0;	% TODO
+
+kEATP		= 1.0;	% TODO	% / h
+kEAMP		= 1.0; 	% TODO
+kEUric 		= 1.0;	% TODO
+
+% Fructolysis
+kFruGlu 	= 1.0;	% TODO
+
+% Lipid uptake via Lipases
+kTgUptakeLiver		= 1.0;	% TODO
+kTgUptakeMuscle		= 1.0;	% TODO
+kTgUptakeVAdip		= 1.0;	% TODO
+kTgUptakeSCAdip		= 1.0;	% TODO
+
+% Lipid packaging
+kLiverFATg			= 1.0;	% TODO
+
+% ...
+
+
+% Sequestration
+kLiverGluGly		= 1.0;	% TODO
+kLiverGlyGlu		= 1.0;	% TODO
+kLiverFAEF			= 1.0;	% TODO
+kLiverEFFA			= 1.0;	% TODO
+
+kMuscleGluGly		= 1.0;	% TODO
+kMuscleGlyGlu		= 1.0;	% TODO
+kMuscleFAEF			= 1.0;	% TODO
+kMuscleEFFA			= 1.0;	% TODO
+
+kVFAStore			= 1.0;	% TODO
+kVStoreFA			= 1.0;	% TODO
+
+kSCFAStore			= 1.0;	% TODO
+kSCStoreFA			= 1.0;	% TODO
+
+LiverGlyT 			= 0.025;	% [0 1]
+LiverGlyCapacity 	= 1000.0;	% g
+LiverGluGlyCenter	= 800.0;
+LiverGluGlyShape	= (LiverGlyCapacity - LiverGluGlyCenter) / atanh( 2*LiverGlyT - 1 );
+
+MuscleGlyT 			= 0.025;	% [0 1]
+MuscleGlyCapacity 	= 3000.0;	% TODO	% g
+MuscleGluGlyCenter	= 2000.0;
+MuscleGluGlyShape	= (MuscleGlyCapacity - MuscleGluGlyCenter) / atanh( 2*MuscleGlyT - 1 );
+
+VStoreT 			= 0.025;	% [0 1]
+VStoreCapacity 		= 3000.0;	%TODO 	% g
+VFAStoreCenter 		= 2000.0;
+VFAStoreShape 		= (VStoreCapacity - VFAStoreCenter) / atanh( 2*VStoreT - 1 );
+
+VFAT 				= 0.025;	% [0 1]
+VInsSatPoint		= 1.0;		% TODO	% g
+VStoreFACenter 		= 0.5;		% TODO
+VStoreFAShape 		= (VInsSatPoint - VStoreFACenter) / atanh( 2*VFAT - 1 );
+
+SCFAT 				= 0.025;	% [0 1]
+SCInsSatPoint		= 1.0;		% TODO	% g
+SCStoreFACenter 	= 0.5;		% TODO
+SCStoreFAShape 		= (SCInsSatPoint - SCStoreFACenter) / atanh( 2*SCFAT - 1 );
 
 % Beta cell action
 QInsBase 			= 1.0;		% TODO
@@ -457,23 +549,23 @@ x.volume = MuscleEFVolume; x.initialAmount = MuscleEFDefault;
 model.fast.compartments.muscleEF = x;
 % Visceral fat
 x = pk_default_compartment( ); x.displayName = 'VAdip/Glu';
-x.volume = VFatVt; x.initialAmount = VFatDefault;
+x.volume = VAdipGluVolume; x.initialAmount = VAdipGluDefault;
 model.fast.compartments.vGlu = x;
 x = pk_default_compartment( ); x.displayName = 'VAdip/FA';
-x.volume = VFatVt; x.initialAmount = VFatDefault;
+x.volume = VAdipFAVolume; x.initialAmount = VAdipFADefault;
 model.fast.compartments.vFA = x;
 x = pk_default_compartment( ); x.displayName = 'VAdip/Storage';
-x.volume = VFatVt; x.initialAmount = VFatDefault;
+x.volume = VAdipStorageVolume; x.initialAmount = VAdipStorageDefault;
 model.fast.compartments.vStorage = x;
 % SC Fat
 x = pk_default_compartment( ); x.displayName = 'SCAdip/Glu';
-x.volume = VFatVt; x.initialAmount = VFatDefault;
+x.volume = SCAdipGluVolume; x.initialAmount = SCAdipGluDefault;
 model.fast.compartments.scGlu = x;
 x = pk_default_compartment( ); x.displayName = 'SCAdip/FA';
-x.volume = VFatVt; x.initialAmount = VFatDefault;
+x.volume = SCAdipFAVolume; x.initialAmount = SCAdipFADefault;
 model.fast.compartments.scFA = x;
 x = pk_default_compartment( ); x.displayName = 'SCAdip/Storage';
-x.volume = SCFatVt; x.initialAmount = SCFatDefault;
+x.volume = SCAdipStorageVolume; x.initialAmount = SCAdipStorageDefault;
 model.fast.compartments.scStorage = x;
 
 %% -- Connections and Interactions
@@ -545,31 +637,31 @@ x.to = { 'liverGlu', 'liverAMP' };
 x.linker = pk_product_linker( kFruGlu );
 model.fast.interactions{ end + 1 } = x;
 
-% Lipid uptake
+% Lipid uptake via Lipases
 x = pk_default_interaction( );
 x.from = { 'bodyTg', 'bodyLpl' }; x.depletes = [true, false]; 
 x.to = { 'liverFA' };
-x.linker = pk_product_linker( kTgUptake );
+x.linker = pk_product_linker( kTgUptakeLiver );
 model.fast.interactions{ end + 1 } = x;
 x = pk_default_interaction( );
 x.from = { 'bodyTg', 'bodyLpl' }; x.depletes = [true, false]; 
 x.to = { 'muscleFA' };
-x.linker = pk_product_linker( kTgUptake );
+x.linker = pk_product_linker( kTgUptakeMuscle );
 model.fast.interactions{ end + 1 } = x;
 x = pk_default_interaction( );
 x.from = { 'bodyTg', 'bodyLpl' }; x.depletes = [true, false]; 
 x.to = { 'vFA' };
-x.linker = pk_product_linker( kTgUptake );
+x.linker = pk_product_linker( kTgUptakeVAdip );
 model.fast.interactions{ end + 1 } = x;
 x = pk_default_interaction( );
 x.from = { 'bodyTg', 'bodyLpl' }; x.depletes = [true, false]; 
 x.to = { 'scFA' };
-x.linker = pk_product_linker( kTgUptake );
+x.linker = pk_product_linker( kTgUptakeSCAdip );
 model.fast.interactions{ end + 1 } = x;
 
 % Lipid release
 x = pk_default_connection( ); x.from = 'liverFA'; x.to = 'bodyTg';
-x.linker = pk_linear_linker( FATgLiverk );
+x.linker = pk_linear_linker( kLiverFATg );
 model.fast.connections{ end + 1 } = x;
 
 %% -- Sequestration
@@ -583,14 +675,14 @@ model.fast.interactions{ end + 1 } = x;
 x = pk_default_interaction( );
 x.from = { 'liverGly', 'bodyGcn' }; x.depletes = [true, false];
 x.to = { 'liverGlu' };
-x.linker = pk_product_linker( kGlyGlu );
+x.linker = pk_product_linker( kLiverGlyGlu );
 model.fast.interactions{ end + 1 } = x;
 
 x = pk_default_connection( ); x.from = 'liverFA'; x.to = 'liverEF';
-x.linker = pk_linear_linker( FAEFLiverk );
+x.linker = pk_linear_linker( kLiverFAEF );
 model.fast.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'liverEF'; x.to = 'liverFA';
-x.linker = pk_linear_linker( EFFALiverk );
+x.linker = pk_linear_linker( kLiverEFFA );
 model.fast.connections{ end + 1 } = x;
 
 % Muscle
@@ -600,14 +692,14 @@ x.to = { 'muscleGly' };
 x.linker = pk_product_tanh_linker( kMuscleGluGly, MuscleGluGlyCenter, MuscleGluGlyShape );
 model.fast.interactions{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'muscleGly'; x.to = 'muscleGlu';
-x.linker = pk_linear_linker( EFFAMusclek );
+x.linker = pk_linear_linker( kMuscleGlyGlu );
 model.fast.connections{ end + 1 } = x;
 
 x = pk_default_connection( ); x.from = 'muscleFA'; x.to = 'muscleEF';
-x.linker = pk_linear_linker( FAEFMusclek );
+x.linker = pk_linear_linker( kMuscleFAEF );
 model.fast.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'muscleEF'; x.to = 'muscleFA';
-x.linker = pk_linear_linker( EFFAMusclek );
+x.linker = pk_linear_linker( kMuscleEFFA );
 model.fast.connections{ end + 1 } = x;
 
 % VF
@@ -624,7 +716,7 @@ model.fast.interactions{ end + 1 } = x;
 
 % SCF
 x = pk_default_connection( ); x.from = 'scFA'; x.to = 'scStorage';
-x.linker = pk_linear_linker( SCFAStorek );
+x.linker = pk_linear_linker( kSCFAStore );
 model.fast.connections{ end + 1 } = x;
 x = pk_default_interaction( );
 x.from = { 'bodyIns', 'scStorage' }; x.depletes = [false, true];
