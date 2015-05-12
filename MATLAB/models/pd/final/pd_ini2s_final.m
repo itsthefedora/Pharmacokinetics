@@ -47,27 +47,33 @@ dosesPerDay		= length( doseOffsets ); 	% #
 %% -- Slow model
 
 % Storage
-QFatVBase 			= 1.0;		% TODO
+VFVolume 			= 1.0;		% OK?	% L
+LiverEFVolume 		= 1.0;		% OK?
+MuscleEFVolume 		= 1.0;		% OK?
+
+QVFBase 			= 1.0;		% TODO	% g / day
+QLiverEFBase 		= 1.0;		% TODO
+QMuscleEFBase 		= 1.0;		% TODO
 
 % GLUT4
-Glut4Volume 		= 1.0;
-Glut4Default 		= 1.0;
+LTB4Volume 			= 1.0;		% OK?
+LTB4Default 		= 1.0;		% OK?
 
-kETreatment 		= 1.0;		% TODO?
-QTreatment 			= 1.0;		% TODO?
+kETreatment 		= 1.0;		% OK?
+QTreatment 			= 1.0;		% OK?
 
-kEGlut4 			= 1.0;		% TODO
-QGlut4Base			= 1.0;		% TODO
+kELTB4Slow 			= 1.0;		% OK?	% / day
+QLTB4BaseSlow		= 1.0;		% OK?	% u / day
 
-QVFGlut4Max 		= 1.0;		% TODO
-QVFGlut4Shape 		= 1.0;		% TODO
-QVFGlut4Center		= 1.0;		% TODO
+QVFLTB4Max 			= 1.0;		% TODO
+QVFLTB4Shape 		= 1.0;		% TODO
+QVFLTB4Center		= 1.0;		% TODO
 
 % Beta
-BetaFakeVolume 		= 1.0;		% TODO?
+BetaFakeVolume 		= 1.0;		% OK?
 BetaQmaxDefault 	= 1.0;		% TODO
 BetaNDefault 		= 1.0;		% TODO
-BetaXDefault 		= 1.0;		% TODO?
+BetaXDefault 		= 1.0;		% OK?
 
 kEBetaQmax 			= 1.0;		% TODO
 kEBetaN				= 1.0;		% TODO
@@ -96,6 +102,7 @@ GluVd 				= 1.0;		% TODO
 FruVd				= 1.0;		% TODO
 InsVd				= 1.0;		% TODO
 GcnVd				= 1.0;		% TODO
+FAVd				= 1.0;		% TODO
 VldlVd 				= 1.0;		% TODO
 LplVd 				= 1.0;		% TODO
 
@@ -107,29 +114,26 @@ BodyGcnDefault		= 1.0;		% TODO
 BodyTgDefault		= 1.0;		% TODO
 BodyFADefault		= 1.0;		% TODO
 BodyFAbDefault		= 1.0;		% TODO
-BodyVldlDefault		= 1.0;		% TODO
 BodyLplDefault		= 1.0;		% TODO
 
 % Tissue
 
 % Volumes
 LiverGlyVolume 		= 1.0;		% TODO?
-LiverEFatVolume		= 1.0;		% TODO?
 MuscleGlyVolume 	= 1.0;		% TODO?
-MuscleEFatVolume	= 1.0;		% TODO?
 
 % Defaults
 LiverGluDefault 	= 1.0;		% TODO
 LiverFruDefault 	= 1.0;		% TODO
 LiverFADefault 		= 1.0;		% TODO
 LiverGlyDefault		= 1.0;		% TODO
-LiverEFatDefault 	= 1.0;		% TODO
+LiverEFDefault 		= 1.0;		% TODO
 LiverATPDefault 	= 1.0;		% TODO
 LiverAMPDefault 	= 1.0;		% TODO
 LiverUricDefault 	= 1.0;		% TODO
 
 MuscleGlyDefault	= 1.0;		% TODO
-MuscleEFatDefault 	= 1.0;		% TODO
+MuscleEFDefault 	= 1.0;		% TODO
 
 % Sequestration
 LiverGlyT 				= 0.025;	% [0 1]
@@ -163,8 +167,8 @@ model.globals.isDebug 		= true;
 
 model.globals.irCenter 		= 1.0;	% TODO
 model.globals.irShape 		= 1.0;	% TODO
-model.globals.irLow 		= 0.4;	% TODO?
-model.globals.irLowLTB4i	= 0.8;	% TODO?
+model.globals.irLow 		= 0.4;	% OK?
+model.globals.irLowLTB4i	= 0.8;	% OK?
 
 %% -- Simulation
 
@@ -210,7 +214,7 @@ model.globals.idx_ltb4i = length( model.slow.compartments );
 
 % Storage
 x = pk_default_compratment( ); x.displayName = 'Storage/VF';
-x.volume = VFatVolume; x.initialAmount = VFatDefault;
+x.volume = VFVolume; x.initialAmount = VFDefault;
 model.slow.compartments.vf = x;
 x = pk_default_compratment( ); x.displayName = 'Storage/LiverEF';
 x.volume = LiverEFVolume; x.initialAmount = LiverEFDefault;
@@ -269,14 +273,14 @@ x = pk_default_connection( ); x.from = 'ltb4i'; x.to = '';
 x.linker = pk_linear_linker( kETreatment );
 model.slow.connections{ end + 1 } = x;
 
-x = pk_default_connection( ); x.from = 'glut4liver'; x.to = '';
-x.linker = pk_linear_linker( kEGlut4 );
+x = pk_default_connection( ); x.from = 'ltb4liver'; x.to = '';
+x.linker = pk_linear_linker( kELTB4 );
 model.slow.connections{ end + 1 } = x;
-x = pk_default_connection( ); x.from = 'glut4muscle'; x.to = '';
-x.linker = pk_linear_linker( kEGlut4 );
+x = pk_default_connection( ); x.from = 'ltb4muscle'; x.to = '';
+x.linker = pk_linear_linker( kELTB4 );
 model.slow.connections{ end + 1 } = x;
-x = pk_default_connection( ); x.from = 'glut4vf'; x.to = '';
-x.linker = pk_linear_linker( kEGlut4 );
+x = pk_default_connection( ); x.from = 'ltb4vf'; x.to = '';
+x.linker = pk_linear_linker( kELTB4 );
 model.slow.connections{ end + 1 } = x;
 
 x = pk_default_connection( ); x.from = 'betaQmax'; x.to = '';
@@ -295,20 +299,36 @@ model.slow.connections{ end + 1 } = x;
 
 % Regimen
 x = pk_default_input( ); x.target = 'met';
-x.flow = pk_constant_flow( QTreatment );
+x.flow = pk_constant_flow( QTreatment, tripleStart, tripleEnd );
 model.slow.inputs{ end + 1 } = x;
 x = pk_default_input( ); x.target = 'su';
-x.flow = pk_constant_flow( QTreatment );
+x.flow = pk_constant_flow( QTreatment, tripleStart, tripleEnd );
 model.slow.inputs{ end + 1 } = x;
 x = pk_default_input( ); x.target = 'tzd';
-x.flow = pk_constant_flow( QTreatment );
+x.flow = pk_constant_flow( QTreatment, tripleStart, tripleEnd );
+model.slow.inputs{ end + 1 } = x;
+
+x = pk_default_input( ); x.target = 'exercise';
+x.flow = pk_constant_flow( QTreatment, deStart, deEnd );
+model.slow.inputs{ end + 1 } = x;
+
+x = pk_default_input( ); x.target = 'ltb4i';
+x.flow = pk_constant_flow( QTreatment, ltbStart, ltbEnd );
 model.slow.inputs{ end + 1 } = x;
 
 % Accumulation
-x = pk_default_input( ); x.target = 'fatV';
-x.flow = pk_constant_flow( QFatVBase );
+x = pk_default_input( ); x.target = 'vf';
+x.flow = pk_constant_flow( QVFBase );
 model.slow.inputs{ end + 1 } = x;
-model.globals.idx_inputFatV = length( model.slow.inputs );	% TODO
+model.globals.idx_inputVF = length( model.slow.inputs );
+x = pk_default_input( ); x.target = 'muscleEF';
+x.flow = pk_constant_flow( QMuscleEFBase );
+model.slow.inputs{ end + 1 } = x;
+model.globals.idx_inputVF = length( model.slow.inputs );
+x = pk_default_input( ); x.target = 'liverEF';
+x.flow = pk_constant_flow( QLiverEFBase );
+model.slow.inputs{ end + 1 } = x;
+model.globals.idx_inputVF = length( model.slow.inputs );
 
 % Baseline hormone production
 x = pk_default_input( ); x.target = 'ltb4liver';
@@ -390,11 +410,8 @@ x = pk_default_compartment( ); x.displayName = 'Body/FA';
 x.volume = FAVd; x.initialAmount = BodyFADefault;
 model.fast.compartments.bodyFA = x;
 x = pk_default_compartment( ); x.displayName = 'Body/FAb';
-x.volume = FAbVd; x.initialAmount = BodyFAbDefault;
+x.volume = FAVd; x.initialAmount = BodyFAbDefault;
 model.fast.compartments.bodyFAb = x;
-x = pk_default_compartment( ); x.displayName = 'Body/VLDL';
-x.volume = VldlVd; x.initialAmount = BodyVldlDefault;
-model.fast.compartments.bodyLpl = x;
 x = pk_default_compartment( ); x.displayName = 'Body/LPL';
 x.volume = LplVd; x.initialAmount = BodyLplDefault;
 model.fast.compartments.bodyLpl = x;
@@ -414,7 +431,7 @@ x = pk_default_compartment( ); x.displayName = 'Liver/Gly';
 x.volume = LiverGlyVolume; x.initialAmount = LiverGlyDefault;
 model.fast.compartments.liverGly = x;
 x = pk_default_compartment( ); x.displayName = 'Liver/E.Fat';
-x.volume = LiverEFatVolume; x.initialAmount = LiverEFatDefault;
+x.volume = LiverEFVolume; x.initialAmount = LiverEFDefault;
 model.fast.compartments.liverEF = x;
 x = pk_default_compartment( ); x.displayName = 'Liver/ATP';
 x.volume = LiverATPVolume; x.initialAmount = LiverATPDefault;
@@ -436,7 +453,7 @@ x = pk_default_compartment( ); x.displayName = 'Muscle/Gly';
 x.volume = MuscleGlyVolume; x.initialAmount = MuscleGlyDefault;
 model.fast.compartments.muscleGly = x;
 x = pk_default_compartment( ); x.displayName = 'Muscle/E.Fat';
-x.volume = MuscleEFatVolume; x.initialAmount = MuscleEFatDefault;
+x.volume = MuscleEFVolume; x.initialAmount = MuscleEFDefault;
 model.fast.compartments.muscleEF = x;
 % Visceral fat
 x = pk_default_compartment( ); x.displayName = 'VAdip/Glu';
@@ -719,7 +736,7 @@ model.fast.sdinputs{ end + 1 } = x;
 
 x = pk_default_input( ); x.target = 'liverUric';
 x.flow = pk_constant_flow( QUricBase );
-model.fast.inputs{ end + 1 } = x;
+model.fast.inputs{ end + 1 } = x;	
 x = pk_default_sdinput( ); x.input = { 'liverAMP' }; x.target = 'liverUric';
 x.flow = pk_tanh_sd_flow( QAMPUricMax, QAMPUricShape, QAMPUricCenter );
 model.fast.sdinputs{ end + 1 } = x;
