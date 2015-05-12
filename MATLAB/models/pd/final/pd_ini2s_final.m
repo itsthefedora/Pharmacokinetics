@@ -92,6 +92,11 @@ BodyGluDefault 		= 1.0;		% TODO
 BodyFruDefault		= 1.0;		% TODO
 BodyInsDefault		= 1.0;		% TODO
 BodyGcnDefault		= 1.0;		% TODO
+BodyTgDefault		= 1.0;		% TODO
+BodyFADefault		= 1.0;		% TODO
+BodyFAbDefault		= 1.0;		% TODO
+BodyVldlDefault		= 1.0;		% TODO
+BodyLplDefault		= 1.0;		% TODO
 
 % Tissue
 
@@ -102,10 +107,28 @@ MuscleGlyVolume 	= 1.0;		% TODO?
 MuscleEFatVolume	= 1.0;		% TODO?
 
 % Defaults
+LiverGluDefault 	= 1.0;		% TODO
+LiverFruDefault 	= 1.0;		% TODO
+LiverFADefault 		= 1.0;		% TODO
 LiverGlyDefault		= 1.0;		% TODO
 LiverEFatDefault 	= 1.0;		% TODO
-LiverGlyDefault		= 1.0;		% TODO
-LiverEFatDefault 	= 1.0;		% TODO
+LiverATPDefault 	= 1.0;		% TODO
+LiverAMPDefault 	= 1.0;		% TODO
+LiverUricDefault 	= 1.0;		% TODO
+
+MuscleGlyDefault	= 1.0;		% TODO
+MuscleEFatDefault 	= 1.0;		% TODO
+
+% Sequestration
+LiverGlyT 				= 0.025;	% [0 1]
+LiverGlyCapacity 		= 1000.0;	% g
+LiverGluGlyCenter		= 800.0;
+LiverGluGlyShape		= (LiverGlyCapacity - LiverGluGlyCenter) / atanh( 2*LiverGlyT - 1 );
+
+MuscleGlyT 				= 0.025;	% [0 1]
+MuscleGlyCapacity 		= 1000.0;	% g
+MuscleGluGlyCenter		= 800.0;
+MuscleGluGlyShape		= (MuscleGlyCapacity - MuscleGluGlyCenter) / atanh( 2*MuscleGlyT - 1 );
 
 % Beta cell action
 QInsBase 			= 1.0;		% TODO
@@ -274,9 +297,15 @@ model.fast.compartments.bodyIns = x;
 x = pk_default_compartment( ); x.displayName = 'Body/Gcn';
 x.volume = GcnVd; x.initialAmount = BodyGcnDefault;
 model.fast.compartments.bodyGcn = x;
-x = pk_default_compartment( ); x.displayName = 'Body/Chylo.';
-x.volume = ChyloVd; x.initialAmount = BodyChyloDefault;
-model.fast.compartments.bodyChylo = x;
+x = pk_default_compartment( ); x.displayName = 'Body/Tg';
+x.volume = TgVd; x.initialAmount = BodyTgDefault;
+model.fast.compartments.bodyTg = x;
+x = pk_default_compartment( ); x.displayName = 'Body/FA';
+x.volume = FAVd; x.initialAmount = BodyFADefault;
+model.fast.compartments.bodyFA = x;
+x = pk_default_compartment( ); x.displayName = 'Body/FAb';
+x.volume = FAbVd; x.initialAmount = BodyFAbDefault;
+model.fast.compartments.bodyFAb = x;
 x = pk_default_compartment( ); x.displayName = 'Body/VLDL';
 x.volume = VldlVd; x.initialAmount = BodyVldlDefault;
 model.fast.compartments.bodyLpl = x;
@@ -356,9 +385,10 @@ model.fast.connections{ end + 1 } = x;
 
 x = pk_default_connection( ); x.from = 'giTg'; x.to = 'giFA';
 x.linker = pk_mm_linker( SITgFAKm, SITgFAVmax );
-model.connections{ end + 1 } = x;
-x = pk_default_connection( ); x.from = 'giFA'; x.to = 'bodyChylo';
-x.linker = pk_linear_linker( FAChylokA );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'giFA'; x.to = 'bodyTg';
+x.linker = pk_linear_linker( FATgkA );
+model.fast.connections{ end + 1 } = x;
 
 % Clearance - Renal
 x = pk_default_connection( ); x.from = 'bodyGlu'; x.to = '';
@@ -382,7 +412,8 @@ x = pk_default_interaction( );
 x.from = { 'liverGlu', 'activity' }; x.depletes = [true, false];
 x.to = { '' }; % TODO
 x.linker = pk_product_linker( kEmGluLiverActive );
-model.interactions{ end + 1 } = x;
+model.fast.interactions{ end + 1 } = x;
+% ... FA? ... %
 
 x = pk_default_connection( ); x.from = 'muscleGlu'; x.to = '';
 x.linker = pk_linear_linker( kEmGluMuscleBase );
@@ -391,7 +422,8 @@ x = pk_default_interaction( );
 x.from = { 'muscleGlu', 'activity' }; x.depletes = [true, false];
 x.to = { '' }; % TODO
 x.linker = pk_product_linker( kEmGluMuscleActive );
-model.interactions{ end + 1 } = x;
+model.fast.interactions{ end + 1 } = x;
+% ... FA? ... %
 
 x = pk_default_connection( ); x.from = 'liverATP'; x.to = '';
 x.linker = pk_linear_linker( kEATP );
@@ -408,32 +440,113 @@ x = pk_default_interaction( );
 x.from = { 'liverFru', 'liverATP' }; x.depletes = [true, true];
 x.to = { 'liverGlu', 'liverAMP' };
 x.linker = pk_product_linker( kFruGlu );
-model.interactions{ end + 1 } = x;
+model.fast.interactions{ end + 1 } = x;
 
-% Chylo. uptake
+% Lipid uptake
 x = pk_default_interaction( );
-x.from = { 'bodyChylo', 'bodyLpl' }; x.depletes = [true, false]; 
+x.from = { 'bodyTg', 'bodyLpl' }; x.depletes = [true, false]; 
 x.to = { 'liverFA' };
-x.linker = pk_product_linker( kChyloUptake );
-model.interactions{ end + 1 } = x;
+x.linker = pk_product_linker( kTgUptake );
+model.fast.interactions{ end + 1 } = x;
 x = pk_default_interaction( );
-x.from = { 'bodyChylo', 'bodyLpl' }; x.depletes = [true, false]; 
+x.from = { 'bodyTg', 'bodyLpl' }; x.depletes = [true, false]; 
 x.to = { 'muscleFA' };
-x.linker = pk_product_linker( kChyloUptake );
-model.interactions{ end + 1 } = x;
+x.linker = pk_product_linker( kTgUptake );
+model.fast.interactions{ end + 1 } = x;
 x = pk_default_interaction( );
-x.from = { 'bodyChylo', 'bodyLpl' }; x.depletes = [true, false]; 
-x.to = { 'liverFA' };
-x.linker = pk_product_linker( kChyloUptake );
-model.interactions{ end + 1 } = x;
-x.from = { 'bodyChylo', 'bodyLpl' }; x.depletes = [true, false]; 
+x.from = { 'bodyTg', 'bodyLpl' }; x.depletes = [true, false]; 
 x.to = { 'vFA' };
-x.linker = pk_product_linker( kChyloUptake );
-model.interactions{ end + 1 } = x;
-x.from = { 'bodyChylo', 'bodyLpl' }; x.depletes = [true, false]; 
+x.linker = pk_product_linker( kTgUptake );
+model.fast.interactions{ end + 1 } = x;
+x = pk_default_interaction( );
+x.from = { 'bodyTg', 'bodyLpl' }; x.depletes = [true, false]; 
 x.to = { 'scFA' };
-x.linker = pk_product_linker( kChyloUptake );
-model.interactions{ end + 1 } = x;
+x.linker = pk_product_linker( kTgUptake );
+model.fast.interactions{ end + 1 } = x;
+
+% Lipid release
+x = pk_default_connection( ); x.from = 'liverFA'; x.to = 'bodyTg';
+x.linker = pk_linear_linker( FATgLiverk );
+model.fast.connections{ end + 1 } = x;
+
+%% -- Sequestration
+
+% Liver
+x = pk_default_interaction( );
+x.from = { 'liverGly', 'liverGlu', 'bodyIns' }; x.depletes = [false, true, false];
+x.to = { 'liverGly' };
+x.linker = pk_product_tanh_linker( kGluGly, GluGlyCenter, GluGlyShape );
+model.fast.interactions{ end + 1 } = x;
+x = pk_default_interaction( );
+x.from = { 'liverGly', 'bodyGcn' }; x.depletes = [true, false];
+x.to = { 'liverGlu' };
+x.linker = pk_product_linker( kGlyGlu );
+model.fast.interactions{ end + 1 } = x;
+
+x = pk_default_connection( ); x.from = 'liverFA'; x.to = 'liverEF';
+x.linker = pk_linear_linker( FAEFLiverk );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'liverFA'; x.to = 'liverEF';
+x.linker = pk_linear_linker( FAEFLiverk );
+model.fast.connections{ end + 1 } = x;
+
+% 
+
+% ... %
+
+%% -- Distribution
+
+% Glucose
+x = pk_default_connection( ); x.from = 'bodyGlu'; x.to = 'liverGlu';
+x.linker = pk_linear_linker( kDGluBodyLiver );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'liverGlu'; x.to = 'bodyGlu';
+x.linker = pk_linear_linker( kDGluLiverBody );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyGlu'; x.to = 'muscleGlu';
+x.linker = pk_linear_linker( kDGluBodymuscle );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'muscleGlu'; x.to = 'bodyGlu';
+x.linker = pk_linear_linker( kDGlumuscleBody );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyGlu'; x.to = 'vGlu';
+x.linker = pk_linear_linker( kDGluBodyVAdip );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'vGlu'; x.to = 'bodyGlu';
+x.linker = pk_linear_linker( kDGluVAdipBody );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyGlu'; x.to = 'scGlu';
+x.linker = pk_linear_linker( kDGluBodySCAdip );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'scGlu'; x.to = 'bodyGlu';
+x.linker = pk_linear_linker( kDGluSCAdipBody );
+model.fast.connections{ end + 1 } = x;
+
+% FAs
+x = pk_default_connection( ); x.from = 'bodyFA'; x.to = 'liverFA';
+x.linker = pk_linear_linker( kDFABodyLiver );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'liverFA'; x.to = 'bodyFA';
+x.linker = pk_linear_linker( kDFALiverBody );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyFA'; x.to = 'muscleFA';
+x.linker = pk_linear_linker( kDFABodyMuscle );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'muscleFA'; x.to = 'bodyFA';
+x.linker = pk_linear_linker( kDFAMuscleBody );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyFA'; x.to = 'vFA';
+x.linker = pk_linear_linker( kDFABodyVAdip );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'vFA'; x.to = 'bodyFA';
+x.linker = pk_linear_linker( kDFAVAdipBody );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyFA'; x.to = 'scFA';
+x.linker = pk_linear_linker( kDFABodySCAdip );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'scFA'; x.to = 'bodyFA';
+x.linker = pk_linear_linker( kDFASCAdipBody );
+model.fast.connections{ end + 1 } = x;
 
 % ... %
 
@@ -479,6 +592,9 @@ model.fast.sdinputs{ end + 1 } = x;
 x = pk_default_input( ); x.target = 'liverUric';
 x.flow = pk_constant_flow( QUricBase );
 model.fast.inputs{ end + 1 } = x;
+x = pk_default_sdinput( ); x.input = { 'liverAMP' }; x.target = 'liverUric';
+x.flow = pk_tanh_sd_flow( QAMPUricMax, QAMPUricShape, QAMPUricCenter );
+model.fast.sdinputs{ end + 1 } = x;
 
 
 
