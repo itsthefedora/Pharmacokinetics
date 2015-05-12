@@ -132,14 +132,14 @@ TgVd 				= 1.0;		% TODO
 LplVd 				= 1.0;		% TODO
 
 % Defaults
-BodyGluDefault 		= 1.0;		% TODO
-BodyFruDefault		= 1.0;		% TODO
-BodyInsDefault		= 1.0;		% TODO
-BodyGcnDefault		= 1.0;		% TODO
-BodyTgDefault		= 1.0;		% TODO
-BodyFADefault		= 1.0;		% TODO
-BodyFAbDefault		= 1.0;		% TODO
-BodyLplDefault		= 1.0;		% TODO
+BodyGluDefault 		= 0.0;		% TODO
+BodyFruDefault		= 0.0;		% TODO
+BodyInsDefault		= 0.0;		% TODO
+BodyGcnDefault		= 0.0;		% TODO
+BodyTgDefault		= 0.0;		% TODO
+BodyFADefault		= 0.0;		% TODO
+BodyFAbDefault		= 0.0;		% TODO
+BodyLplDefault		= 0.0;		% TODO
 
 % Tissue
 
@@ -194,7 +194,6 @@ kEGlu 		= 0.0141 * 60;	% / h
 kEFru 		= kEGlu;		% TODO
 kEIns 		= 0.09 * 60;
 kEGcn 		= 2.29;
-kEVldl		= 0;			% TODO
 kEFA 		= kEGlu;		% TODO
 kELpl 		= kEIns;		% TODO
 
@@ -225,13 +224,77 @@ kTgUptakeSCAdip		= 1.0;	% TODO
 % Lipid packaging
 kLiverFATg			= 1.0;	% TODO
 
+
+eqInsBase 		= 50e-12 * molarMassIns * InsVd;
+eqInsMax 		= 800e-12 * molarMassIns * InsVd;
+eqGcnBase 		= 40e-12 * molarMassGcn * GcnVd;
+eqGcnMax 		= 180e-12 * molarMassGcn * GcnVd;
+
+% Distribution
+% Glucose			% TODO ALL
+GluRedistFactor 	= 1.0;
+GluShallowFactor 	= 0.6;
+GluDeepFactor		= 0.2;
+
+kDGluBodyLiver		= GlukA;							% / h
+kDGluLiverBody		= kDGluBodyLiver * GluRedistFactor;
+kDGluBodyMuscle		= GlukA / eqInsBase;
+kDGluMuscleBody		= kDGluBodyMuscle * GluRedistFactor;
+kDGluBodyVAdip		= GluShallowFactor * GlukA;
+kDGluVAdipBody		= kDGluBodyVAdip * GluRedistFactor;
+kDGluBodySCAdip		= GluDeepFactor * GlukA;
+kDGluSCAdipBody		= kDGluBodySCAdip * GluRedistFactor;
+
+% FAs			% TODO ALL
+FADistFactor 		= 3.0;
+FARedistFactor 		= 1.0;
+FAShallowFactor 	= 0.6;
+FADeepFactor		= 0.2;
+
+kDFABodyLiver		= FADistFactor * kEFA;							% / h
+kDFALiverBody		= kDFABodyLiver * FARedistFactor;
+kDFABodyMuscle		= FADistFactor * kEFA;
+kDFAMuscleBody		= kDFABodyMuscle * FARedistFactor;
+kDFABodyVAdip		= FAShallowFactor * FADistFactor * kEFA;
+kDFAVAdipBody		= kDFABodyVAdip * FARedistFactor;
+kDFABodySCAdip		= FADeepFactor * FADistFactor * kEFA;
+kDFASCAdipBody		= kDFABodySCAdip * FARedistFactor;
+
+% Inputs
+
+% Beta cell action
+QInsBase 		= eqInsBase * kEIns;
+QGluInsMax 		= eqInsMax * kEIns;					% TODO
+QGluInsCenter	= 9.5e-3 * molarMassGlu * GluVd;
+QGluInsShape 	= 0.45 * QGluInsCenter;
+
+% Alpha cell action
+QGcnBase 		= eqGcnBase * kEGcn;
+QGluGcnMax 		= eqGcnMax * kEGcn;					% TODO
+QGluGcnCenter	= 3.5e-3 * molarMassGlu * GluVd;
+QGluGcnShape 	= 0.3 * QGluGcnCenter;
+
+% Lipase production
+QLplBase 			= QInsBase * 1e5;	% TODO
+QInsLplMax 			= QGluInsMax * 1e5;	% TODO
+QInsLplCenter		= 11.5e-5;			% TODO
+QInsLplShape 		= 0.45 * QInsLplCenter;
+
+% Uric acid production
+QUricBase 			= 1.0;		% TODO
+QAMPUricMax 		= 1.0;		% TODO
+QAMPUricShape 		= 1.0;		% TODO
+QAMPUricCenter		= 1.0;		% TODO
+
 % Sequestration
 
-eqInsBaseInv = 1/eqInsBase;		eqGcnBaseInv = 1/eqGcnBase;
+eqInsBaseInv = 1/eqInsBase;
+eqGcnBaseInv = 1/eqGcnBase;
+
 kLiverGluGly		= 60 * eqInsBaseInv * ...							% TODO
-	(8e-6 * molarMassGlu * waterMass) /	(2e-3 * molarMassGlu * VdGlu);
+	(8e-6 * molarMassGlu * waterMass) /	(2e-3 * molarMassGlu * GluVd);
 kLiverGlyGlu		= 60 * eqGcnBaseInv * ...							% TODO
-	(20e-6 * molarMassGlu * waterMass) / (250e-3 * molarMassGlu * VdGlu);
+	(20e-6 * molarMassGlu * waterMass) / (250e-3 * molarMassGlu * GluVd);
 kLiverFAEF			= 1.0;	% TODO
 kLiverEFFA			= 1.0;	% TODO
 
@@ -270,66 +333,6 @@ SCFAT 				= 0.025;	% [0 1]
 SCInsSatPoint		= 1.0;		% TODO	% g
 SCStoreFACenter 	= 0.5;		% TODO
 SCStoreFAShape 		= (SCInsSatPoint - SCStoreFACenter) / atanh( 2*SCFAT - 1 );
-
-% Distribution
-% Glucose			% TODO ALL
-GluRedistFactor 	= 1.0;
-GluShallowFactor 	= 0.6;
-GluDeepFactor		= 0.2;
-
-kDGluBodyLiver		= GlukA;							% / h
-kDGluLiverBody		= kDGluBodyLiver * GluRedistFactor;
-kDGluBodyMuscle		= GlukA / eqInsBase;
-kDGluMuscleBody		= kDGluBodyMuscle * GluRedistFactor;
-kDGluBodyVAdip		= GluShallowFactor * GlukA;
-kDGluVAdipBody		= kDGluBodyVAdipk * GluRedistFactor;
-kDGluBodySCAdip		= GluDeepFactor * GlukA;
-kDGluSCAdipBody		= kDGluBodySCAdip * GluRedistFactor;
-
-% FAs			% TODO ALL
-FADistFactor 		= 3.0;
-FARedistFactor 		= 1.0;
-FAShallowFactor 	= 0.6;
-FADeepFactor		= 0.2;
-
-kDFABodyLiver		= FADistFactor * kEFA;							% / h
-kDFALiverBody		= kDFABodyLiver * FARedistFactor;
-kDFABodyMuscle		= FADistFactor * kEFA;
-kDFAMuscleBody		= kDFABodyMuscle * FARedistFactor;
-kDFABodyVAdip		= FAShallowFactor * FADistFactor * kEFA;
-kDFAVAdipBody		= kDFABodyVAdip * FARedistFactor;
-kDFABodySCAdip		= FADeepFactor * FADistFactor * kEFA;
-kDFASCAdipBody		= kDFABodySCAdip * FARedistFactor;
-
-% Inputs
-
-% Beta cell action
-eqInsBase 		= 50e-12 * molarMassIns * VdIns;
-eqInsMax 		= 800e-12 * molarMassIns * VdIns;
-QInsBase 		= eqInsBase * kEIns;
-QGluInsMax 		= eqInsMax * kEIns;					% TODO
-QGluInsCenter	= 9.5e-3 * molarMassGlu * VdGlu;
-QGluInsShape 	= 0.45 * QGluInsCenter;
-
-% Alpha cell action
-eqGcnBase 		= 40e-12 * molarMassGcn * VdGcn;
-eqGcnMax 		= 180e-12 * molarMassGcn * VdGcn;
-QGcnBase 		= eqGcnBase * kEGcn;
-QGluGcnMax 		= eqGcnMax * kEGcn;					% TODO
-QGluGcnCenter	= 3.5e-3 * molarMassGlu * VdGlu;
-QGluGcnShape 	= 0.3 * QGluGcnCenter;
-
-% Lipase production
-QLplBase 			= qInsBase * 1e5;	% TODO
-QInsLplMax 			= qInsMax * 1e5;	% TODO
-QInsLplCenter		= 11.5e-5;			% TODO
-QInsLplShape 		= 0.45 * QInsLplCenter;
-
-% Uric acid production
-QUricBase 			= 1.0;		% TODO
-QAMPUricMax 		= 1.0;		% TODO
-QAMPUricShape 		= 1.0;		% TODO
-QAMPUricCenter		= 1.0;		% TODO
 
 %=========================================================================%
 %% GLOBAL

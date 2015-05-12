@@ -6,7 +6,7 @@
 % Spring 2015
 %=========================================================================%
 
-function [tResult, yResult, tResultFast, yResultFast] = pk_main_2ts( varargin )
+function [tResult, yResult, yNames, tResultFast, yResultFast, yNamesFast] = pk_main_2ts( varargin )
 %PK_MAIN_2TS Summary of this function goes here
 
 %% Initialization
@@ -124,21 +124,21 @@ for i = 1:nChops
     
 end
 
+yNames      = model.slow.compartmentDisplayNames;
+yNamesFast  = model.fast.compartmentDisplayNames;
 
 % Generate ODE function handle.
-f = @(t, y) pk_odefun( t, y, model.slow );
-
-
+%f = @(t, y) pk_odefun( t, y, model.slow );
 
 % Simulate!
-[ tResult, yResult ] = ode15s( f, model.slow.timeSpan, model.slow.initialState, model.slow.odeOpts );
+%[ tResult, yResult ] = ode15s( f, model.slow.timeSpan, model.slow.initialState, model.slow.odeOpts );
 
 
 %% Plot result
 
 if doPlots
     
-    pk_plot( tResult, yResult, model.slow, false );
+    pk_plot( tResult, yResult, model.fast, false );
     
 end
 
