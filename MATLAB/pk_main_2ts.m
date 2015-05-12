@@ -111,9 +111,9 @@ for i = 1:nChops
     % TEMP:
     % Plot.
     cla(hLocal);
-    plot(hLocal, tSegFast, 100 * ySegFast(:, 3)/7.24, 'k-', 'linewidth', 2);
+    plot(hLocal, tSegFast, 100 * ySegFast(:, 6)/7.24, 'k-', 'linewidth', 2);
     hold(hLocal, 'on'); tFirst = tResultFast{1}; yFirst = yResultFast{1};
-    plot(hLocal, tFirst, 100 * yFirst(:, 3)/7.24, 'k--', 'linewidth', 2);
+    plot(hLocal, tFirst, 100 * yFirst(:, 6)/7.24, 'k--', 'linewidth', 2);
     set(hLocal, 'xlim', [2*24, 3*24]);
     set(hLocal, 'fontsize', 24);
     
@@ -138,7 +138,7 @@ yNamesFast  = model.fast.compartmentDisplayNames;
 
 if doPlots
     
-    pk_plot( tResult, yResult, model.fast, false );
+    pk_plot( tResultFast{end}, yResultFast{end}, model.fast, false );
     
 end
 

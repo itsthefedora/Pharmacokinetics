@@ -12,6 +12,12 @@ function [ outModel ] = pk_final_updateSlow( model, inStruct )
 
 outModel = model;
 
+%% Extract features
+
+% ... %
+
+%% Alter model
+
 % ... %
 
 end

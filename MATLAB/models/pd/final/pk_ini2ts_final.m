@@ -14,7 +14,7 @@
 
 % Modifiers
 
-absorptionFactor 	= 1.0;
+absorptionFactor 	= 5.0;
 
 %% -- Meta
 
@@ -37,7 +37,7 @@ scfMass 		= scfFraction * fatMass;
 
 liverMass 			= 1.5e3;	% g
 glycogenPerMass 	= 65e-3;	% g / g
-glycogenMass 		= glycogenPerMass * liverMass * 10;
+glycogenMass 		= 500;	% TODO	%glycogenPerMass * liverMass * 3;
 
 % Treatment
 tripleStart 	= 0;
@@ -49,7 +49,7 @@ ltbEnd 			= 365;
 
 % Diet
 fracFruGlu 		= 0.35;		% TODO? % 0.27 - 0.37
-dietScale 		= 2.0;
+dietScale 		= 4.0;
 
 doseGlu 		= dietScale * [35 30 40];				% g
 doseFru 		= dietScale * [50 30 40] / fracFruGlu;
@@ -117,7 +117,7 @@ GlukA				= absorptionFactor * 0.205 * 60;	% / h
 FrukA 				= GlukA;							% TODO
 FATgkA				= GlukA;							% TODO
 % Bile action
-SITgFAVmax 			= 1.25 * 60 * GIVolume;	% g / hr
+SITgFAVmax 			= 3 * 1.25 * 60 * GIVolume;	% g / hr
 SITgFAKm			= 100 * GIVolume;		% g
 
 % Central
@@ -178,16 +178,16 @@ LiverUricDefault 	= 1.0;		% TODO
 
 MuscleGluDefault 	= 1.0;		% TODO
 MuscleFADefault 	= 1.0;		% TODO
-MuscleGlyDefault	= 1.0;		% TODO
+MuscleGlyDefault	= 3 * glycogenMass;		% TODO
 MuscleEFDefault 	= 1.0;		% TODO
 
 VAdipGluDefault 	= 1.0;		% TODO
 VAdipFADefault 		= 1.0;		% TODO
-VAdipStorageDefault = vfMass;
+VAdipStorageDefault = 0.5 * glycogenMass;	% TODO	%vfMass;
 
 SCAdipGluDefault 		= 1.0;		% TODO
 SCAdipFADefault 		= 1.0;		% TODO
-SCAdipStorageDefault	= scfMass;
+SCAdipStorageDefault	= 0.75 * glycogenMass;	% TODO	%scfMass;
 
 % Clearance - Renal
 kEGlu 		= 0.0141 * 60;	% / h
@@ -299,7 +299,7 @@ kLiverFAEF			= 1.0;	% TODO
 kLiverEFFA			= 1.0;	% TODO
 
 kMuscleGluGly		= kLiverGluGly;	% TODO
-kMuscleGlyGlu		= kLiverGlyGlu;	% TODO
+kMuscleGlyGlu		= kLiverGlyGlu * eqGcnBase;	% TODO
 kMuscleFAEF			= kLiverFAEF;	% TODO
 kMuscleEFFA			= kLiverEFFA;	% TODO
 
@@ -359,7 +359,7 @@ model.globals.irLowLTB4i	= 0.8;	% OK?
 model.slow.timeSpan 	= [0, 0.3 * 365];		% d
 model.fastSpacing 		= 14;
 
-model.fast.timeSpan 	= [0, 3 * 24];				% h
+model.fast.timeSpan 	= [0, 5 * 24];				% h
 model.fast.maxStep 		= min( doseDuration ) / 2;
 
 model.updateSlow = @( m, inStruct ) pk_final_updateSlow( m, inStruct );
@@ -687,6 +687,12 @@ x.linker = pk_linear_linker( kErIns );
 model.fast.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'bodyGcn'; x.to = '';
 x.linker = pk_linear_linker( kErGcn );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyFA'; x.to = '';
+x.linker = pk_linear_linker( kEFA );	% TODO
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'bodyLpl'; x.to = '';
+x.linker = pk_linear_linker( kELpl );	% TODO
 model.fast.connections{ end + 1 } = x;
 
 % Clearance - Metabolism
