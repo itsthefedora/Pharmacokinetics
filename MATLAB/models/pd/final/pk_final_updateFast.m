@@ -24,16 +24,17 @@ idx_ltb4liver 			= model.globals.idx_ltb4liver;
 idx_ltb4muscle 			= model.globals.idx_ltb4muscle;
 idx_ltb4vf 				= model.globals.idx_ltb4vf;
 
-idx_intGluGlyLiver 		= model.globals.idx_intGluGlyLiver;
+idx_intLiverGluGly		= model.globals.idx_intLiverGluGly;
 idx_intDGluBodyMuscle 	= model.globals.idx_intDGluBodyMuscle;
 
-kGluGly			= model.globals.kGluGly;
-GluGlyCenter 	= model.globals.GluGlyCenter;
-GluGlyShape 	= model.globals.GluGlyShape;
-irCenter 		= model.globals.irCenter;
-irShape 		= model.globals.irShape;
-irLow 			= model.globals.irLow;
-irLowLTB4i		= model.globals.irLowLTB4i;
+kDGluBodyMuscle 	= model.globals.kDGluBodyMuscle;
+kLiverGluGly		= model.globals.kLiverGluGly;
+LiverGluGlyCenter 	= model.globals.LiverGluGlyCenter;
+LiverGluGlyShape 	= model.globals.LiverGluGlyShape;
+irCenter 			= model.globals.irCenter;
+irShape 			= model.globals.irShape;
+irLow 				= model.globals.irLow;
+irLowLTB4i			= model.globals.irLowLTB4i;
 
 ltb4iCur 	= y(end, idx_ltb4i);
 irLowTrue 	= ltb4iCur * irLowLTB4i + (1 - ltb4iCur) * irLow;
@@ -55,8 +56,8 @@ insRespVF 		= irLowTrue + (1 - irLowTrue) * (1/2) * ...
 x = pk_default_interaction( );
 x.from = { 'liverGly', 'liverGlu', 'bodyIns' }; x.depletes = [false, true, false];
 x.to = { 'liverGly' };
-x.linker = pk_product_tanh_linker( insRespLiver * kGluGly, GluGlyCenter, GluGlyShape );
-model.fast.interactions{ idx_intGluGlyLiver } = x;
+x.linker = pk_product_tanh_linker( insRespLiver * kLiverGluGly, LiverGluGlyCenter, LiverGluGlyShape );
+model.fast.interactions{ idx_intLiverGluGly } = x;
 
 x = pk_default_interaction( );
 x.from = { 'bodyGlu', 'bodyIns' }; x.depletes = [true, false];
@@ -68,7 +69,7 @@ model.fast.interactions{ idx_intDGluBodyMuscle } = x;
 %% Debugging
 
 if isDebug
-	disp( ['Ins.Resp. (L, M, VF): ' num2str(insRespLiver) ', ' num2str(iinsRespMuscle) ...
+	disp( ['Ins.Resp. (L, M, VF): ' num2str(insRespLiver) ', ' num2str(insRespMuscle) ...
 		', ' num2str(insRespVF) ] );
 end
 

@@ -12,7 +12,9 @@
 
 %% -- Quick access
 
-% ... %
+% Modifiers
+
+absorptionFactor 	= 1.0;
 
 %% -- Meta
 
@@ -21,12 +23,28 @@ molarMassGlu 	= 180.16;	% g/mol
 molarMassIns 	= 5808;
 molarMassGcn 	= 3485;
 
+% Patient data
+patientMass 	= 70.0;							% kg
+waterFraction	= 0.65;							%[0 1]
+waterMass		= waterFraction * patientMass;
+
+fatFraction		= 0.3;
+fatMass 		= fatFraction * patientMass * 1000.0;	% g
+vfFraction 		= 0.15;
+scfFraction 	= 0.3;
+vfMass 			= vfFraction * fatMass;
+scfMass 		= scfFraction * fatMass;
+
+liverMass 			= 1.5e3;	% g
+glycogenPerMass 	= 65e-3;	% g / g
+glycogenMass 		= glycogenPerMass * liverMass * 10;
+
 % Treatment
 tripleStart 	= 0;
 tripleEnd 		= 0;
 deStart 		= 0;
 deEnd 			= 0;
-ltbStart 		= 100;
+ltbStart 		= 30;
 ltbEnd 			= 365;
 
 % Diet
@@ -62,9 +80,15 @@ LTB4Default 		= 1.0;		% OK?
 kETreatment 		= 1.0;		% OK?
 QTreatment 			= 1.0;		% OK?
 
-kELTB4Slow 			= 1.0;		% OK?	% / day
-QLTB4BaseSlow		= 1.0;		% OK?	% u / day
+kELTB4 				= 1.0;		% OK?	% / day
+QLTB4Base			= 1.0;		% OK?	% u / day
 
+QLiverEFLTB4Max 	= 1.0;		% TODO
+QLiverEFLTB4Shape 	= 1.0;		% TODO
+QLiverEFLTB4Center	= 1.0;		% TODO
+QMuscleEFLTB4Max 	= 1.0;		% TODO
+QMuscleEFLTB4Shape 	= 1.0;		% TODO
+QMuscleEFLTB4Center	= 1.0;		% TODO
 QVFLTB4Max 			= 1.0;		% TODO
 QVFLTB4Shape 		= 1.0;		% TODO
 QVFLTB4Center		= 1.0;		% TODO
@@ -86,25 +110,25 @@ QBetaXBase 			= 1.0;		% TODO
 
 % GI
 
-GIVolume 			= 1.0;		% TODO
+GIVolume 			= 0.105;		% L
 
 % Absorption
-GlukA				= 1.0;		% TODO
-FrukA 				= 1.0;		% TODO
-FATgkA				= 1.0;		% TODO
+GlukA				= absorptionFactor * 0.205 * 60;	% / h
+FrukA 				= GlukA;							% TODO
+FATgkA				= GlukA;							% TODO
 % Bile action
-SITgFAKm 			= 1.0;		% TODO
-SITgFAVmax			= 1.0;		% TODO
+SITgFAVmax 			= 1.25 * 60 * GIVolume;	% g / hr
+SITgFAKm			= 100 * GIVolume;		% g
 
 % Central
 
 % Volumes
-GluVd 				= 1.0;		% TODO
-FruVd				= 1.0;		% TODO
-InsVd				= 1.0;		% TODO
-GcnVd				= 1.0;		% TODO
+GluVd 				= 7.24;		% L
+FruVd				= GluVd;	% TODO
+InsVd				= 15.6;
+GcnVd				= 0.19 * waterMass;
 FAVd				= 1.0;		% TODO
-VldlVd 				= 1.0;		% TODO
+TgVd 				= 1.0;		% TODO
 LplVd 				= 1.0;		% TODO
 
 % Defaults
@@ -129,8 +153,8 @@ LiverATPVolume 		= 1.0;		% OK?
 LiverAMPVolume 		= 1.0;		% OK?
 LiverUricVolume 	= 1.0;		% OK?
 
-MudcleGluVolume 	= 1.0;		% OK?
-MudcleFAVolume 		= 1.0;		% OK?
+MuscleGluVolume 	= 1.0;		% OK?
+MuscleFAVolume 		= 1.0;		% OK?
 MuscleGlyVolume		= 1.0;		% OK?
 MuscleEFVolume 		= 1.0;		% OK?
 
@@ -146,30 +170,38 @@ SCAdipStorageVolume	= 1.0;		% OK?
 LiverGluDefault 	= 1.0;		% TODO
 LiverFruDefault 	= 1.0;		% TODO
 LiverFADefault 		= 1.0;		% TODO
-LiverGlyDefault		= 1.0;		% TODO
+LiverGlyDefault		= glycogenMass;
 LiverEFDefault 		= 1.0;		% TODO
 LiverATPDefault 	= 1.0;		% TODO
 LiverAMPDefault 	= 1.0;		% TODO
 LiverUricDefault 	= 1.0;		% TODO
 
-MudcleGluDefault 	= 1.0;		% TODO
-MudcleFADefault 	= 1.0;		% TODO
+MuscleGluDefault 	= 1.0;		% TODO
+MuscleFADefault 	= 1.0;		% TODO
 MuscleGlyDefault	= 1.0;		% TODO
 MuscleEFDefault 	= 1.0;		% TODO
 
 VAdipGluDefault 	= 1.0;		% TODO
 VAdipFADefault 		= 1.0;		% TODO
-VAdipStorageDefault = 1.0;		% TODO
+VAdipStorageDefault = vfMass;
 
 SCAdipGluDefault 		= 1.0;		% TODO
 SCAdipFADefault 		= 1.0;		% TODO
-SCAdipStorageDefault	= 1.0;		% TODO
+SCAdipStorageDefault	= scfMass;
 
 % Clearance - Renal
-kErGlu 		= 1.0;	% TODO	% / h
-kErFru 		= 1.0;	% TODO
-kErIns 		= 1.0;	% TODO
-kErGcn 		= 1.0;	% TODO
+kEGlu 		= 0.0141 * 60;	% / h
+kEFru 		= kEGlu;		% TODO
+kEIns 		= 0.09 * 60;
+kEGcn 		= 2.29;
+kEVldl		= 0;			% TODO
+kEFA 		= kEGlu;		% TODO
+kELpl 		= kEIns;		% TODO
+
+kErGlu 		= kEGlu;						% TODO	% / h
+kErFru 		= kEFru * (1 - fracFruGlu);		% TODO
+kErIns 		= kEIns;						% TODO
+kErGcn 		= kEGcn;						% TODO
 
 % Clearance - Metabolism
 kEmGluLiverBase			= 1.0;	% TODO	% / h
@@ -182,7 +214,7 @@ kEAMP		= 1.0; 	% TODO
 kEUric 		= 1.0;	% TODO
 
 % Fructolysis
-kFruGlu 	= 1.0;	% TODO
+kFruGlu 	= kEFru * fracFruGlu;
 
 % Lipid uptake via Lipases
 kTgUptakeLiver		= 1.0;	% TODO
@@ -195,15 +227,18 @@ kLiverFATg			= 1.0;	% TODO
 
 % Sequestration
 
-kLiverGluGly		= 1.0;	% TODO
-kLiverGlyGlu		= 1.0;	% TODO
+eqInsBaseInv = 1/eqInsBase;		eqGcnBaseInv = 1/eqGcnBase;
+kLiverGluGly		= 60 * eqInsBaseInv * ...							% TODO
+	(8e-6 * molarMassGlu * waterMass) /	(2e-3 * molarMassGlu * VdGlu);
+kLiverGlyGlu		= 60 * eqGcnBaseInv * ...							% TODO
+	(20e-6 * molarMassGlu * waterMass) / (250e-3 * molarMassGlu * VdGlu);
 kLiverFAEF			= 1.0;	% TODO
 kLiverEFFA			= 1.0;	% TODO
 
-kMuscleGluGly		= 1.0;	% TODO
-kMuscleGlyGlu		= 1.0;	% TODO
-kMuscleFAEF			= 1.0;	% TODO
-kMuscleEFFA			= 1.0;	% TODO
+kMuscleGluGly		= kLiverGluGly;	% TODO
+kMuscleGlyGlu		= kLiverGlyGlu;	% TODO
+kMuscleFAEF			= kLiverFAEF;	% TODO
+kMuscleEFFA			= kLiverEFFA;	% TODO
 
 kVFAStore			= 1.0;	% TODO
 kVStoreFA			= 1.0;	% TODO
@@ -237,45 +272,58 @@ SCStoreFACenter 	= 0.5;		% TODO
 SCStoreFAShape 		= (SCInsSatPoint - SCStoreFACenter) / atanh( 2*SCFAT - 1 );
 
 % Distribution
-% Glu
-kDGluBodyLiver		= 1.0;	% TODO	% / h
-kDGluLiverBody		= 1.0;	% TODO
-kDGluBodyMuscle		= 1.0;	% TODO
-kDGluMuscleBody		= 1.0;	% TODO
-kDGluBodyVAdip		= 1.0;	% TODO
-kDGluVAdipBody		= 1.0;	% TODO
-kDGluBodySCAdip		= 1.0;	% TODO
-kDGluSCAdipBody		= 1.0;	% TODO
+% Glucose			% TODO ALL
+GluRedistFactor 	= 1.0;
+GluShallowFactor 	= 0.6;
+GluDeepFactor		= 0.2;
 
-% FAs
-kDFABodyLiver		= 1.0;	% TODO	% / h
-kDFALiverBody		= 1.0;	% TODO
-kDFABodyMuscle		= 1.0;	% TODO
-kDFAMuscleBody		= 1.0;	% TODO
-kDFABodyVAdip		= 1.0;	% TODO
-kDFAVAdipBody		= 1.0;	% TODO
-kDFABodySCAdip		= 1.0;	% TODO
-kDFASCAdipBody		= 1.0;	% TODO
+kDGluBodyLiver		= GlukA;							% / h
+kDGluLiverBody		= kDGluBodyLiver * GluRedistFactor;
+kDGluBodyMuscle		= GlukA / eqInsBase;
+kDGluMuscleBody		= kDGluBodyMuscle * GluRedistFactor;
+kDGluBodyVAdip		= GluShallowFactor * GlukA;
+kDGluVAdipBody		= kDGluBodyVAdipk * GluRedistFactor;
+kDGluBodySCAdip		= GluDeepFactor * GlukA;
+kDGluSCAdipBody		= kDGluBodySCAdip * GluRedistFactor;
+
+% FAs			% TODO ALL
+FADistFactor 		= 3.0;
+FARedistFactor 		= 1.0;
+FAShallowFactor 	= 0.6;
+FADeepFactor		= 0.2;
+
+kDFABodyLiver		= FADistFactor * kEFA;							% / h
+kDFALiverBody		= kDFABodyLiver * FARedistFactor;
+kDFABodyMuscle		= FADistFactor * kEFA;
+kDFAMuscleBody		= kDFABodyMuscle * FARedistFactor;
+kDFABodyVAdip		= FAShallowFactor * FADistFactor * kEFA;
+kDFAVAdipBody		= kDFABodyVAdip * FARedistFactor;
+kDFABodySCAdip		= FADeepFactor * FADistFactor * kEFA;
+kDFASCAdipBody		= kDFABodySCAdip * FARedistFactor;
 
 % Inputs
 
 % Beta cell action
-QInsBase 			= 1.0;		% TODO
-QGluInsMax 			= 1.0;		% TODO
-QGluInsShape 		= 1.0;		% TODO
-QGluInsCenter		= 1.0;		% TODO
+eqInsBase 		= 50e-12 * molarMassIns * VdIns;
+eqInsMax 		= 800e-12 * molarMassIns * VdIns;
+QInsBase 		= eqInsBase * kEIns;
+QGluInsMax 		= eqInsMax * kEIns;					% TODO
+QGluInsCenter	= 9.5e-3 * molarMassGlu * VdGlu;
+QGluInsShape 	= 0.45 * QGluInsCenter;
 
 % Alpha cell action
-QGcnBase 			= 1.0;		% TODO
-QGluGcnMax 			= 1.0;		% TODO
-QGluGcnShape 		= 1.0;		% TODO
-QGluGcnCenter		= 1.0;		% TODO
+eqGcnBase 		= 40e-12 * molarMassGcn * VdGcn;
+eqGcnMax 		= 180e-12 * molarMassGcn * VdGcn;
+QGcnBase 		= eqGcnBase * kEGcn;
+QGluGcnMax 		= eqGcnMax * kEGcn;					% TODO
+QGluGcnCenter	= 3.5e-3 * molarMassGlu * VdGlu;
+QGluGcnShape 	= 0.3 * QGluGcnCenter;
 
 % Lipase production
-QLplBase 			= 1.0;		% TODO
-QInsLplMax 			= 1.0;		% TODO
-QInsLplShape 		= 1.0;		% TODO
-QInsLplCenter		= 1.0;		% TODO
+QLplBase 			= qInsBase * 1e5;	% TODO
+QInsLplMax 			= qInsMax * 1e5;	% TODO
+QInsLplCenter		= 11.5e-5;			% TODO
+QInsLplShape 		= 0.45 * QInsLplCenter;
 
 % Uric acid production
 QUricBase 			= 1.0;		% TODO
@@ -288,6 +336,12 @@ QAMPUricCenter		= 1.0;		% TODO
 
 %% -- Globals
 
+model.globals.kLiverGluGly 			= kLiverGluGly;
+model.globals.LiverGluGlyCenter 	= LiverGluGlyCenter;
+model.globals.LiverGluGlyShape 		= LiverGluGlyShape;
+
+model.globals.kDGluBodyMuscle 		= kDGluBodyMuscle;
+
 model.globals.isDebug 		= true;
 
 model.globals.irCenter 		= 1.0;	% TODO
@@ -299,7 +353,7 @@ model.globals.irLowLTB4i	= 0.8;	% OK?
 
 % ... %
 
-model.slow.timeSpan 	= [0, 1 * 365];		% d
+model.slow.timeSpan 	= [0, 0.3 * 365];		% d
 model.fastSpacing 		= 14;
 
 model.fast.timeSpan 	= [0, 3 * 24];				% h
@@ -314,66 +368,66 @@ model.updateFast = @( m, inStruct ) pk_final_updateFast( m, inStruct );
 %%  -- Compartments
 
 % Treatment
-x = pk_default_compratment( ); x.displayName = 'Treatment/Met';
+x = pk_default_compartment( ); x.displayName = 'Treatment/Met';
 x.volume = 1.0; x.initialAmount = 0.0;
 model.slow.compartments.met = x;
 model.globals.idx_met = length( model.slow.compartments );
-x = pk_default_compratment( ); x.displayName = 'Treatment/Su';
+x = pk_default_compartment( ); x.displayName = 'Treatment/Su';
 x.volume = 1.0; x.initialAmount = 0.0;
 model.slow.compartments.su = x;
 model.globals.idx_su = length( model.slow.compartments );
-x = pk_default_compratment( ); x.displayName = 'Treatment/Tzd';
+x = pk_default_compartment( ); x.displayName = 'Treatment/Tzd';
 x.volume = 1.0; x.initialAmount = 0.0;
 model.slow.compartments.tzd = x;
 model.globals.idx_tzd = length( model.slow.compartments );
 
-x = pk_default_compratment( ); x.displayName = 'Treatment/Exercise';
+x = pk_default_compartment( ); x.displayName = 'Treatment/Exercise';
 x.volume = 1.0; x.initialAmount = 0.0;
 model.slow.compartments.exercise = x;
 model.globals.idx_exercise = length( model.slow.compartments );
 
-x = pk_default_compratment( ); x.displayName = 'Treatment/LTB4I';
+x = pk_default_compartment( ); x.displayName = 'Treatment/LTB4I';
 x.volume = 1.0; x.initialAmount = 0.0;
 model.slow.compartments.ltb4i = x;
 model.globals.idx_ltb4i = length( model.slow.compartments );
 
 % Storage
-x = pk_default_compratment( ); x.displayName = 'Storage/VF';
-x.volume = VFVolume; x.initialAmount = VFDefault;
+x = pk_default_compartment( ); x.displayName = 'Storage/VF';
+x.volume = VAdipStorageVolume; x.initialAmount = VAdipStorageDefault;
 model.slow.compartments.vf = x;
-x = pk_default_compratment( ); x.displayName = 'Storage/LiverEF';
+x = pk_default_compartment( ); x.displayName = 'Storage/LiverEF';
 x.volume = LiverEFVolume; x.initialAmount = LiverEFDefault;
 model.slow.compartments.liverEF = x;
-x = pk_default_compratment( ); x.displayName = 'Storage/MuscleEF';
+x = pk_default_compartment( ); x.displayName = 'Storage/MuscleEF';
 x.volume = MuscleEFVolume; x.initialAmount = MuscleEFDefault;
 model.slow.compartments.muscleEF = x;
 
 % ... %
 
 % GLUT4 TFs
-x = pk_default_compratment( ); x.displayName = 'LTB4/Liver';
+x = pk_default_compartment( ); x.displayName = 'LTB4/Liver';
 x.volume = LTB4Volume; x.initialAmount = LTB4Default;
 model.slow.compartments.ltb4liver = x;
 model.globals.idx_ltb4liver = length( model.slow.compartments );
-x = pk_default_compratment( ); x.displayName = 'LTB4/Muscle';
+x = pk_default_compartment( ); x.displayName = 'LTB4/Muscle';
 x.volume = LTB4Volume; x.initialAmount = LTB4Default;
 model.slow.compartments.ltb4muscle = x;
 model.globals.idx_ltb4muscle = length( model.slow.compartments );
-x = pk_default_compratment( ); x.displayName = 'LTB4/VF';
+x = pk_default_compartment( ); x.displayName = 'LTB4/VF';
 x.volume = LTB4Volume; x.initialAmount = LTB4Default;
 model.slow.compartments.ltb4vf = x;
 model.globals.idx_ltb4vf = length( model.slow.compartments );
 
 % Beta stuff
-x = pk_default_compratment( ); x.displayName = 'Beta/Qmax';
+x = pk_default_compartment( ); x.displayName = 'Beta/Qmax';
 x.volume = BetaFakeVolume; x.initialAmount = BetaQmaxDefault;
 model.slow.compartments.betaQmax = x;
 
-x = pk_default_compratment( ); x.displayName = 'Beta/N';
+x = pk_default_compartment( ); x.displayName = 'Beta/N';
 x.volume = BetaFakeVolume; x.initialAmount = BetaNDefault;
 model.slow.compartments.betaN = x;
 
-x = pk_default_compratment( ); x.displayName = 'Beta/FactorX';
+x = pk_default_compartment( ); x.displayName = 'Beta/FactorX';
 x.volume = BetaFakeVolume; x.initialAmount = BetaXDefault;
 model.slow.compartments.betaX = x;
 
@@ -705,6 +759,7 @@ x.from = { 'liverGly', 'liverGlu', 'bodyIns' }; x.depletes = [false, true, false
 x.to = { 'liverGly' };
 x.linker = pk_product_tanh_linker( kLiverGluGly, LiverGluGlyCenter, LiverGluGlyShape );
 model.fast.interactions{ end + 1 } = x;
+model.globals.idx_intLiverGluGly = length( model.fast.interactions );
 x = pk_default_interaction( );
 x.from = { 'liverGly', 'bodyGcn' }; x.depletes = [true, false];
 x.to = { 'liverGlu' };
@@ -777,16 +832,20 @@ x = pk_default_connection( ); x.from = 'muscleGlu'; x.to = 'bodyGlu';
 x.linker = pk_linear_linker( kDGluMuscleBody );
 model.fast.connections{ end + 1 } = x;
 
-x = pk_default_connection( ); x.from = 'bodyGlu'; x.to = 'vGlu';
-x.linker = pk_linear_linker( kDGluBodyVAdip );
-model.fast.connections{ end + 1 } = x;
+x = pk_default_interaction( );
+x.from = { 'bodyGlu', 'bodyIns' }; x.depletes = [true, false];
+x.to = { 'vGlu' };
+x.linker = pk_product_linker( kDGluBodyVAdip );
+model.fast.interactions{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'vGlu'; x.to = 'bodyGlu';
 x.linker = pk_linear_linker( kDGluVAdipBody );
 model.fast.connections{ end + 1 } = x;
 
-x = pk_default_connection( ); x.from = 'bodyGlu'; x.to = 'scGlu';
-x.linker = pk_linear_linker( kDGluBodySCAdip );
-model.fast.connections{ end + 1 } = x;
+x = pk_default_interaction( );
+x.from = { 'bodyGlu', 'bodyIns' }; x.depletes = [true, false];
+x.to = { 'scGlu' };
+x.linker = pk_product_linker( kDGluBodySCAdip );
+model.fast.interactions{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'scGlu'; x.to = 'bodyGlu';
 x.linker = pk_linear_linker( kDGluSCAdipBody );
 model.fast.connections{ end + 1 } = x;
@@ -826,13 +885,13 @@ model.fast.connections{ end + 1 } = x;
 for i = 1:dosesPerDay
 
 	x = pk_default_input( ); x.target = 'giGlu';
-	x.flow = pk_pulsed_flow( doseGlu(i), doseDuration(i), 24, -1, doseOffset(i) );
+	x.flow = pk_pulsed_flow( doseGlu(i), doseDuration(i), 24, -1, doseOffsets(i) );
 	model.fast.inputs{ end + 1 } = x;
 	x = pk_default_input( ); x.target = 'giFru';
-	x.flow = pk_pulsed_flow( doseFru(i), doseDuration(i), 24, -1, doseOffset(i) );
+	x.flow = pk_pulsed_flow( doseFru(i), doseDuration(i), 24, -1, doseOffsets(i) );
 	model.fast.inputs{ end + 1 } = x;
 	x = pk_default_input( ); x.target = 'giTg';
-	x.flow = pk_pulsed_flow( doseTg(i), doseDuration(i), 24, -1, doseOffset(i) );
+	x.flow = pk_pulsed_flow( doseTg(i), doseDuration(i), 24, -1, doseOffsets(i) );
 	model.fast.inputs{ end + 1 } = x;
 
 end
