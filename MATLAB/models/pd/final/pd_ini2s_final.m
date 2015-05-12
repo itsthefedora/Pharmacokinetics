@@ -21,6 +21,14 @@ molarMassGlu 	= 180.16;	% g/mol
 molarMassIns 	= 5808;
 molarMassGcn 	= 3485;
 
+% Treatment
+tripleStart 	= 0;
+tripleEnd 		= 0;
+deStart 		= 0;
+deEnd 			= 0;
+ltbStart 		= 100;
+ltbEnd 			= 365;
+
 % Diet
 fracFruGlu 		= 0.35;		% TODO? % 0.27 - 0.37
 dietScale 		= 2.0;
@@ -29,9 +37,10 @@ doseGlu 		= dietScale * [35 30 40];				% g
 doseFru 		= dietScale * [50 30 40] / fracFruGlu;
 doseTg 			= dietScale * [10 16 30];
 
-doseDuration 	= (1/60) * [15 30 45]; % hr
+doseDuration 	= (1/60) * [15 30 45]; 		% hr
 doseOffsets 	= [6 12 18];
-dosesPerDay		= length( doseOffsets ); % #
+
+dosesPerDay		= length( doseOffsets ); 	% #
 
 % ... %
 
@@ -43,6 +52,9 @@ QFatVBase 			= 1.0;		% TODO
 % GLUT4
 Glut4Volume 		= 1.0;
 Glut4Default 		= 1.0;
+
+kETreatment 		= 1.0;		% TODO?
+QTreatment 			= 1.0;		% TODO?
 
 kEGlut4 			= 1.0;		% TODO
 QGlut4Base			= 1.0;		% TODO
@@ -145,7 +157,16 @@ QGluGcnCenter		= 1.0;		% TODO
 %=========================================================================%
 %% GLOBAL
 
-%% -- Parameters
+%% -- Globals
+
+model.globals.isDebug 		= true;
+
+model.globals.irCenter 		= 1.0;	% TODO
+model.globals.irShape 		= 1.0;	% TODO
+model.globals.irLow 		= 0.4;	% TODO?
+model.globals.irLowLTB4i	= 0.8;	% TODO?
+
+%% -- Simulation
 
 % ... %
 
@@ -155,7 +176,6 @@ model.fastSpacing 		= 14;
 model.fast.timeSpan 	= [0, 3 * 24];				% h
 model.fast.maxStep 		= min( doseDuration ) / 2;
 
-% TODO
 model.updateSlow = @( m, inStruct ) pk_final_updateSlow( m, inStruct );
 model.updateFast = @( m, inStruct ) pk_final_updateFast( m, inStruct );
 
@@ -164,25 +184,56 @@ model.updateFast = @( m, inStruct ) pk_final_updateFast( m, inStruct );
 
 %%  -- Compartments
 
+% Treatment
+x = pk_default_compratment( ); x.displayName = 'Treatment/Met';
+x.volume = 1.0; x.initialAmount = 0.0;
+model.slow.compartments.met = x;
+model.globals.idx_met = length( model.slow.compartments );
+x = pk_default_compratment( ); x.displayName = 'Treatment/Su';
+x.volume = 1.0; x.initialAmount = 0.0;
+model.slow.compartments.su = x;
+model.globals.idx_su = length( model.slow.compartments );
+x = pk_default_compratment( ); x.displayName = 'Treatment/Tzd';
+x.volume = 1.0; x.initialAmount = 0.0;
+model.slow.compartments.tzd = x;
+model.globals.idx_tzd = length( model.slow.compartments );
+
+x = pk_default_compratment( ); x.displayName = 'Treatment/Exercise';
+x.volume = 1.0; x.initialAmount = 0.0;
+model.slow.compartments.exercise = x;
+model.globals.idx_exercise = length( model.slow.compartments );
+
+x = pk_default_compratment( ); x.displayName = 'Treatment/LTB4I';
+x.volume = 1.0; x.initialAmount = 0.0;
+model.slow.compartments.ltb4i = x;
+model.globals.idx_ltb4i = length( model.slow.compartments );
+
 % Storage
-x = pk_default_compratment( );
-x.volume = VFatVolume;
-x.initialAmount = VFatDefault;
-x.displayName = 'Storage/V.Fat';
-model.slow.compartments.fatV = x;
+x = pk_default_compratment( ); x.displayName = 'Storage/VF';
+x.volume = VFatVolume; x.initialAmount = VFatDefault;
+model.slow.compartments.vf = x;
+x = pk_default_compratment( ); x.displayName = 'Storage/LiverEF';
+x.volume = LiverEFVolume; x.initialAmount = LiverEFDefault;
+model.slow.compartments.liverEF = x;
+x = pk_default_compratment( ); x.displayName = 'Storage/MuscleEF';
+x.volume = MuscleEFVolume; x.initialAmount = MuscleEFDefault;
+model.slow.compartments.muscleEF = x;
 
 % ... %
 
 % GLUT4 TFs
-x = pk_default_compratment( ); x.displayName = 'GLUT4/Liver';
-x.volume = Glut4Volume; x.initialAmount = Glut4Default;
-model.slow.compartments.glut4liver = x;
-x = pk_default_compratment( ); x.displayName = 'GLUT4/Muscle';
-x.volume = Glut4Volume; x.initialAmount = Glut4Default;
-model.slow.compartments.glut4muscle = x;
-x = pk_default_compratment( ); x.displayName = 'GLUT4/VF';
-x.volume = Glut4Volume; x.initialAmount = Glut4Default;
-model.slow.compartments.glut4vf = x;
+x = pk_default_compratment( ); x.displayName = 'LTB4/Liver';
+x.volume = LTB4Volume; x.initialAmount = LTB4Default;
+model.slow.compartments.ltb4liver = x;
+model.globals.idx_ltb4liver = length( model.slow.compartments );
+x = pk_default_compratment( ); x.displayName = 'LTB4/Muscle';
+x.volume = LTB4Volume; x.initialAmount = LTB4Default;
+model.slow.compartments.ltb4muscle = x;
+model.globals.idx_ltb4muscle = length( model.slow.compartments );
+x = pk_default_compratment( ); x.displayName = 'LTB4/VF';
+x.volume = LTB4Volume; x.initialAmount = LTB4Default;
+model.slow.compartments.ltb4vf = x;
+model.globals.idx_ltb4vf = length( model.slow.compartments );
 
 % Beta stuff
 x = pk_default_compratment( ); x.displayName = 'Beta/Qmax';
@@ -200,6 +251,24 @@ model.slow.compartments.betaX = x;
 %% -- Connections
 
 % Degradation
+x = pk_default_connection( ); x.from = 'met'; x.to = '';
+x.linker = pk_linear_linker( kETreatment );
+model.slow.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'su'; x.to = '';
+x.linker = pk_linear_linker( kETreatment );
+model.slow.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'tzd'; x.to = '';
+x.linker = pk_linear_linker( kETreatment );
+model.slow.connections{ end + 1 } = x;
+
+x = pk_default_connection( ); x.from = 'exercise'; x.to = '';
+x.linker = pk_linear_linker( kETreatment );
+model.slow.connections{ end + 1 } = x;
+
+x = pk_default_connection( ); x.from = 'ltb4i'; x.to = '';
+x.linker = pk_linear_linker( kETreatment );
+model.slow.connections{ end + 1 } = x;
+
 x = pk_default_connection( ); x.from = 'glut4liver'; x.to = '';
 x.linker = pk_linear_linker( kEGlut4 );
 model.slow.connections{ end + 1 } = x;
@@ -224,26 +293,43 @@ model.slow.connections{ end + 1 } = x;
 
 %% -- Inputs
 
+% Regimen
+x = pk_default_input( ); x.target = 'met';
+x.flow = pk_constant_flow( QTreatment );
+model.slow.inputs{ end + 1 } = x;
+x = pk_default_input( ); x.target = 'su';
+x.flow = pk_constant_flow( QTreatment );
+model.slow.inputs{ end + 1 } = x;
+x = pk_default_input( ); x.target = 'tzd';
+x.flow = pk_constant_flow( QTreatment );
+model.slow.inputs{ end + 1 } = x;
+
 % Accumulation
 x = pk_default_input( ); x.target = 'fatV';
 x.flow = pk_constant_flow( QFatVBase );
 model.slow.inputs{ end + 1 } = x;
 model.globals.idx_inputFatV = length( model.slow.inputs );	% TODO
 
-% Baseline TF production
-x = pk_default_input( ); x.target = 'glut4liver';
-x.flow = pk_constant_flow( QGlut4Base );
+% Baseline hormone production
+x = pk_default_input( ); x.target = 'ltb4liver';
+x.flow = pk_constant_flow( QLTB4Base );
 model.slow.inputs{ end + 1 } = x;
-x = pk_default_input( ); x.target = 'glut4muscle';
-x.flow = pk_constant_flow( QGlut4Base );
+x = pk_default_input( ); x.target = 'ltb4muscle';
+x.flow = pk_constant_flow( QLTB4Base );
 model.slow.inputs{ end + 1 } = x;
-x = pk_default_input( ); x.target = 'glut4vf';
-x.flow = pk_constant_flow( QGlut4Base );
+x = pk_default_input( ); x.target = 'ltb4vf';
+x.flow = pk_constant_flow( QLTB4Base );
 model.slow.inputs{ end + 1 } = x;
 
-% TF secretion by VF
-x = pk_default_sdinput( ); x.input = { 'fatV' }; x.target = 'glut4tf';
-x.flow = pk_tanh_sd_flow( QVFGlut4Max, QVFGlut4Shape, QVFGlut4Center );
+% Hormone secretion
+x = pk_default_sdinput( ); x.input = { 'liverEF' }; x.target = 'ltb4liver';
+x.flow = pk_tanh_sd_flow( QLiverEFLTB4Max, QLiverEFLTB4Shape, QLiverEFLTB4Center );
+model.slow.sdinputs{ end + 1 } = x;
+x = pk_default_sdinput( ); x.input = { 'muscleEF' }; x.target = 'ltb4muscle';
+x.flow = pk_tanh_sd_flow( QMuscleEFLTB4Max, QMuscleEFLTB4Shape, QMuscleEFLTB4Center );
+model.slow.sdinputs{ end + 1 } = x;
+x = pk_default_sdinput( ); x.input = { 'vf' }; x.target = 'ltb4vf';
+x.flow = pk_tanh_sd_flow( QVFLTB4Max, QVFLTB4Shape, QVFLTB4Center );
 model.slow.sdinputs{ end + 1 } = x;
 
 % Beta-stuff Production
@@ -266,7 +352,7 @@ model.slow.inputs{ end + 1 } = x;
 %% -- Compartments
 
 % Behavioral
-x = pk_default_compartment( ); x.displayName = './Activity';
+x = pk_default_compartment( ); x.displayName = 'Behavior/Activity';
 x.volume = 1; x.initialAmount = 0;
 model.fast.compartments.activity = x;
 
@@ -475,7 +561,7 @@ model.fast.connections{ end + 1 } = x;
 x = pk_default_interaction( );
 x.from = { 'liverGly', 'liverGlu', 'bodyIns' }; x.depletes = [false, true, false];
 x.to = { 'liverGly' };
-x.linker = pk_product_tanh_linker( kGluGly, GluGlyCenter, GluGlyShape );
+x.linker = pk_product_tanh_linker( kLiverGluGly, LiverGluGlyCenter, LiverGluGlyShape );
 model.fast.interactions{ end + 1 } = x;
 x = pk_default_interaction( );
 x.from = { 'liverGly', 'bodyGcn' }; x.depletes = [true, false];
@@ -486,13 +572,48 @@ model.fast.interactions{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'liverFA'; x.to = 'liverEF';
 x.linker = pk_linear_linker( FAEFLiverk );
 model.fast.connections{ end + 1 } = x;
-x = pk_default_connection( ); x.from = 'liverFA'; x.to = 'liverEF';
-x.linker = pk_linear_linker( FAEFLiverk );
+x = pk_default_connection( ); x.from = 'liverEF'; x.to = 'liverFA';
+x.linker = pk_linear_linker( EFFALiverk );
 model.fast.connections{ end + 1 } = x;
 
-% 
+% Muscle
+x = pk_default_interaction( );
+x.from = { 'muscleGly', 'muscleGlu' }; x.depletes = [false, true];
+x.to = { 'muscleGly' };
+x.linker = pk_product_tanh_linker( kMuscleGluGly, MuscleGluGlyCenter, MuscleGluGlyShape );
+model.fast.interactions{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'muscleGly'; x.to = 'muscleGlu';
+x.linker = pk_linear_linker( EFFAMusclek );
+model.fast.connections{ end + 1 } = x;
 
-% ... %
+x = pk_default_connection( ); x.from = 'muscleFA'; x.to = 'muscleEF';
+x.linker = pk_linear_linker( FAEFMusclek );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_connection( ); x.from = 'muscleEF'; x.to = 'muscleFA';
+x.linker = pk_linear_linker( EFFAMusclek );
+model.fast.connections{ end + 1 } = x;
+
+% VF
+x = pk_default_interaction( );
+x.from = { 'vStorage', 'vFA' }; x.depletes = [false, true];
+x.to = { 'vStorage' };
+x.linker = pk_product_tanh_linker( kVFAStore, VFAStoreCenter, VFAStoreShape );
+model.fast.interactions{ end + 1 } = x;
+x = pk_default_interaction( );
+x.from = { 'bodyIns', 'vStorage' }; x.depletes = [false, true];
+x.to = { 'vFA' };
+x.linker = pk_product_tanh_linker( kVStoreFA, VStoreFACenter, VStoreFAShape );
+model.fast.interactions{ end + 1 } = x;
+
+% SCF
+x = pk_default_connection( ); x.from = 'scFA'; x.to = 'scStorage';
+x.linker = pk_linear_linker( SCFAStorek );
+model.fast.connections{ end + 1 } = x;
+x = pk_default_interaction( );
+x.from = { 'bodyIns', 'scStorage' }; x.depletes = [false, true];
+x.to = { 'scFA' };
+x.linker = pk_product_tanh_linker( kSCStoreFA, SCStoreFACenter, SCStoreFAShape );
+model.fast.interactions{ end + 1 } = x;
 
 %% -- Distribution
 
@@ -503,18 +624,24 @@ model.fast.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'liverGlu'; x.to = 'bodyGlu';
 x.linker = pk_linear_linker( kDGluLiverBody );
 model.fast.connections{ end + 1 } = x;
-x = pk_default_connection( ); x.from = 'bodyGlu'; x.to = 'muscleGlu';
-x.linker = pk_linear_linker( kDGluBodymuscle );
-model.fast.connections{ end + 1 } = x;
+
+x = pk_default_interaction( );
+x.from = { 'bodyGlu', 'bodyIns' }; x.depletes = [true, false];
+x.to = { 'muscleGlu' };
+x.linker = pk_product_linker( kDGluBodyMuscle );
+model.fast.interactions{ end + 1 } = x;
+model.globals.idx_intDGluBodyMuscle = length( model.fast.interactions );
 x = pk_default_connection( ); x.from = 'muscleGlu'; x.to = 'bodyGlu';
-x.linker = pk_linear_linker( kDGlumuscleBody );
+x.linker = pk_linear_linker( kDGluMuscleBody );
 model.fast.connections{ end + 1 } = x;
+
 x = pk_default_connection( ); x.from = 'bodyGlu'; x.to = 'vGlu';
 x.linker = pk_linear_linker( kDGluBodyVAdip );
 model.fast.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'vGlu'; x.to = 'bodyGlu';
 x.linker = pk_linear_linker( kDGluVAdipBody );
 model.fast.connections{ end + 1 } = x;
+
 x = pk_default_connection( ); x.from = 'bodyGlu'; x.to = 'scGlu';
 x.linker = pk_linear_linker( kDGluBodySCAdip );
 model.fast.connections{ end + 1 } = x;
@@ -529,26 +656,27 @@ model.fast.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'liverFA'; x.to = 'bodyFA';
 x.linker = pk_linear_linker( kDFALiverBody );
 model.fast.connections{ end + 1 } = x;
+
 x = pk_default_connection( ); x.from = 'bodyFA'; x.to = 'muscleFA';
 x.linker = pk_linear_linker( kDFABodyMuscle );
 model.fast.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'muscleFA'; x.to = 'bodyFA';
 x.linker = pk_linear_linker( kDFAMuscleBody );
 model.fast.connections{ end + 1 } = x;
+
 x = pk_default_connection( ); x.from = 'bodyFA'; x.to = 'vFA';
 x.linker = pk_linear_linker( kDFABodyVAdip );
 model.fast.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'vFA'; x.to = 'bodyFA';
 x.linker = pk_linear_linker( kDFAVAdipBody );
 model.fast.connections{ end + 1 } = x;
+
 x = pk_default_connection( ); x.from = 'bodyFA'; x.to = 'scFA';
 x.linker = pk_linear_linker( kDFABodySCAdip );
 model.fast.connections{ end + 1 } = x;
 x = pk_default_connection( ); x.from = 'scFA'; x.to = 'bodyFA';
 x.linker = pk_linear_linker( kDFASCAdipBody );
 model.fast.connections{ end + 1 } = x;
-
-% ... %
 
 %% -- Inputs
 
